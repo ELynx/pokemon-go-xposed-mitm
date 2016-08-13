@@ -10,7 +10,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
 /**
- * Class what manages injection of code into target app
+ * Class that manages injection of code into target app
  */
 public class Injector implements IXposedHookLoadPackage {
     private static Boolean busyOut = false;

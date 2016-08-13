@@ -1,15 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        somekeys {
-        }
-    }
     compileSdkVersion 23
     buildToolsVersion '23.0.3'
     defaultConfig {
         applicationId "com.elynx.pogoxmitm"
-        minSdkVersion 19
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -20,13 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    productFlavors {
-    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    //testCompile 'junit:junit:4.12'
-    //compile 'com.android.support:appcompat-v7:23.0.3'
-    provided 'de.robv.android.xposed:api:82'
+    provided 'de.robv.android.xposed:api:53'
+    provided 'de.robv.android.xposed:api:53:sources'
 }
