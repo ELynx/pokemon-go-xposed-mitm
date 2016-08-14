@@ -27,8 +27,6 @@ public class Injector implements IXposedHookLoadPackage {
         String responseHeaders;
         int responseCode = 0;
 
-        ByteBuffer buffer;
-
         public String shortDump() {
             StringBuilder builder = new StringBuilder();
 
@@ -80,35 +78,40 @@ public class Injector implements IXposedHookLoadPackage {
 
                         // read all data from original buffer that is available at the moment
 
-                        ByteBuffer original = (ByteBuffer) param.args[5];
+                        ByteBuffer source = (ByteBuffer) param.args[5];
+                        ByteBuffer unmodified = ByteBuffer.allocate(source.remaining());
 
-                        context.buffer = ByteBuffer.allocate(original.remaining());
-
-                        if (original.hasArray()) {
+                        if (source.hasArray()) {
                             // make size calculations
-                            int offset = original.arrayOffset() + (int) param.args[6];
-                            int length = Math.min((int) param.args[7], context.buffer.capacity());
+                            int offset = source.arrayOffset() + (int) param.args[6];
+                            int length = Math.min((int) param.args[7], unmodified.capacity());
 
                             // copy bytes from original to buffer
-                            context.buffer.put(original.array(), offset, length);
+                            unmodified.put(source.array(), offset, length);
                         } else {
                             // TODO fix in case of reading from stream
                             // let original pass bytes as it can
                             // if original's capacity has not changed, then all should be fine
-                            original.get(context.buffer.array(), 0, context.buffer.capacity());
+                            source.get(unmodified.array(), 0, unmodified.capacity());
                         }
 
-                        // set buffer ready to be read later on
-                        context.buffer.rewind();
+                        unmodified.rewind();
+
+                        // a copy of buffer to be mangled by parsers
+                        // it will be used if processing returns true
+                        ByteBuffer modified = ByteBuffer.allocate(unmodified.capacity());
+                        modified.put(unmodified);
+                        modified.rewind();
 
                         // process data
-                        DataHandler.processOutboundPackage(context.requestId, context.buffer);
+                        boolean wasModified = DataHandler.processOutboundPackage(context.requestId, modified);
+                        ByteBuffer toServer = wasModified ? modified : unmodified;
 
                         // prepare data for original method
-                        context.buffer.rewind();
-                        param.args[5] = context.buffer;
+                        toServer.rewind();
+                        param.args[5] = toServer;
                         param.args[6] = 0;
-                        param.args[7] = context.buffer.remaining();
+                        param.args[7] = toServer.remaining();
                     }
                 });
 
