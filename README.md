@@ -1,5 +1,5 @@
 #Pokemon Go (c) Man-in-the-middle attack
-#Brief
+##Brief
 Uses XPosed framework to intercept web communications of app and modify out- and inbound packages.<br>
 Internally uses POGOProtos compiled to Java. See app/src/main/java/com/pogoprotos.md for instructions.<br>
 ##What it can do now
