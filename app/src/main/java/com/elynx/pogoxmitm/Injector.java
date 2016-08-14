@@ -27,12 +27,14 @@ public class Injector implements IXposedHookLoadPackage {
         String responseHeaders;
         int responseCode = 0;
 
+        ByteBuffer buffer;
+
         public String shortDump() {
             StringBuilder builder = new StringBuilder();
 
-            builder.append(Integer.toHexString(requestId));
-            builder.append(":");
-            builder.append(Long.toHexString(objectId));
+            builder.append(Integer.toString(requestId));
+            //builder.append(":");
+            //builder.append(Long.toHexString(objectId));
             builder.append(" ");
             builder.append(method);
             builder.append(" ");
@@ -64,6 +66,8 @@ public class Injector implements IXposedHookLoadPackage {
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         RpcContext context = rpcContext.get();
 
+                        // fill in the context, this is threaded so each thread have individual
+
                         context.threadId = Thread.currentThread().getId();
 
                         context.objectId = (long) param.args[0];
@@ -73,9 +77,42 @@ public class Injector implements IXposedHookLoadPackage {
                         context.requestHeaders = (String) param.args[4];
 
                         XposedBridge.log("[request] " + context.shortDump());
+
+                        // read all data from original buffer that is available at the moment
+
+                        ByteBuffer original = (ByteBuffer) param.args[5];
+
+                        context.buffer = ByteBuffer.allocate(original.remaining());
+
+                        if (original.hasArray()) {
+                            // make size calculations
+                            int offset = original.arrayOffset() + (int) param.args[6];
+                            int length = Math.min((int) param.args[7], context.buffer.capacity());
+
+                            // copy bytes from original to buffer
+                            context.buffer.put(original.array(), offset, length);
+                        } else {
+                            // TODO fix in case of reading from stream
+                            // let original pass bytes as it can
+                            // if original's capacity has not changed, then all should be fine
+                            original.get(context.buffer.array(), 0, context.buffer.capacity());
+                        }
+
+                        // set buffer ready to be read later on
+                        context.buffer.rewind();
+
+                        // process data
+                        DataHandler.processOutboundPackage(context.requestId, context.buffer);
+
+                        // prepare data for original method
+                        context.buffer.rewind();
+                        param.args[5] = context.buffer;
+                        param.args[6] = 0;
+                        param.args[7] = context.buffer.remaining();
                     }
                 });
 
+        // method is executed in thread context
         findAndHookMethod("com.nianticlabs.nia.network.NiaNet", lpparam.classLoader,
                 "joinHeaders", HttpURLConnection.class,
                 new XC_MethodHook() {
@@ -88,6 +125,7 @@ public class Injector implements IXposedHookLoadPackage {
                     }
                 });
 
+        // method is executed in thread context
         findAndHookMethod("com.nianticlabs.nia.network.NiaNet", lpparam.classLoader,
                 "readDataSteam", HttpURLConnection.class,
                 new XC_MethodHook() {
