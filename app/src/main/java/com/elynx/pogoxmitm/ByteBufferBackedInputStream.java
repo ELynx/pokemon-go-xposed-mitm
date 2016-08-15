@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 /**
  * Gloriously copy-pasted from StackOverflow
  * https://stackoverflow.com/questions/4332264/wrapping-a-bytebuffer-with-an-inputstream/6603018#6603018
- * StackOVerflow - cutting corners since forever
+ * StackOverflow - cutting corners since forever
  */
 public class ByteBufferBackedInputStream extends InputStream {
 
@@ -15,8 +15,10 @@ public class ByteBufferBackedInputStream extends InputStream {
 
     public ByteBufferBackedInputStream(ByteBuffer buf) {
         this.buf = buf;
+        this.buf.rewind();
     }
 
+    @Override
     public int read() throws IOException {
         if (!buf.hasRemaining()) {
             return -1;
@@ -24,8 +26,8 @@ public class ByteBufferBackedInputStream extends InputStream {
         return buf.get() & 0xFF;
     }
 
-    public int read(byte[] bytes, int off, int len)
-            throws IOException {
+    @Override
+    public int read(byte[] bytes, int off, int len) throws IOException {
         if (!buf.hasRemaining()) {
             return -1;
         }
@@ -33,5 +35,14 @@ public class ByteBufferBackedInputStream extends InputStream {
         len = Math.min(len, buf.remaining());
         buf.get(bytes, off, len);
         return len;
+    }
+
+    @Override
+    public int available() throws IOException {
+        if (!buf.hasRemaining()) {
+            return 0;
+        }
+
+        return buf.remaining();
     }
 }

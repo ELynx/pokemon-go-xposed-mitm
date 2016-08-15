@@ -85,12 +85,13 @@ public class Injector implements IXposedHookLoadPackage {
 
                         // if modification of outbound data is not needed stop at bookkeeping
                         // for current project scope early return is a valid choice
-                        if (doOutbound == false)
+                        if (!doOutbound)
                             return;
 
                         // read all data from original buffer that is available at the moment
 
                         ByteBuffer source = (ByteBuffer) param.args[5];
+                        // TODO Oracle docs says that remaining is bad...
                         ByteBuffer unmodified = ByteBuffer.allocate(source.remaining());
 
                         if (source.hasArray()) {
@@ -104,7 +105,7 @@ public class Injector implements IXposedHookLoadPackage {
                             // TODO fix in case of reading from stream
                             // let original pass bytes as it can
                             // if original's capacity has not changed, then all should be fine
-                            source.get(unmodified.array(), 0, unmodified.capacity());
+                            source.get(unmodified.array(), unmodified.arrayOffset(), unmodified.capacity());
                         }
 
                         unmodified.rewind();
@@ -122,7 +123,7 @@ public class Injector implements IXposedHookLoadPackage {
                         // prepare data for original method
                         toServer.rewind();
                         param.args[5] = toServer;
-                        param.args[6] = 0;
+                        param.args[6] = toServer.arrayOffset();
                         param.args[7] = toServer.remaining();
                     }
                 });
@@ -160,20 +161,20 @@ public class Injector implements IXposedHookLoadPackage {
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         RpcContext context = rpcContext.get();
 
-                        if (context.niaResponse == false)
+                        if (!context.niaResponse)
                             return;
 
                         XposedBridge.log("[response] " + context.shortDump());
 
                         // if modification of inbound data is not needed stop at bookkeeping
-                        if (doInbound == false)
+                        if (!doInbound)
                             return;
 
                         InputStream source = (InputStream) param.getResult();
                         // TODO more complex reading
+                        // TODO don't use available
                         ByteBuffer unmodified = ByteBuffer.allocate(source.available());
-                        // TODO use arrayOffset?
-                        source.read(unmodified.array(), 0, unmodified.capacity());
+                        source.read(unmodified.array(), unmodified.arrayOffset(), unmodified.capacity());
 
                         // TODO get rid of copy-paste
 
