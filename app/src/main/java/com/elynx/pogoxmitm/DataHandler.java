@@ -40,4 +40,8 @@ public class DataHandler {
         // false means "throw away data and send what was meant to be sent"
         return false;
     }
+
+    public static boolean processInboundPackage(int requestId, ByteBuffer data) throws Throwable {
+        return false;
+    }
 }

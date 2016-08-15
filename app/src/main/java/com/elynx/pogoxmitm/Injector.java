@@ -1,5 +1,6 @@
 package com.elynx.pogoxmitm;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.ByteBuffer;
 
@@ -14,10 +15,15 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
  * Class that manages injection of code into target app
  */
 public class Injector implements IXposedHookLoadPackage {
+    public static boolean doOutbound = false;
+    public static boolean doInbound = true;
+
     private static String[] Methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE"};
 
     private static class RpcContext {
         long threadId = 0L;
+        boolean niaRequest = false;
+        boolean niaResponse = false;
 
         long objectId = 0L;
         int requestId = 0;
@@ -67,6 +73,7 @@ public class Injector implements IXposedHookLoadPackage {
                         // fill in the context, this is threaded so each thread have individual
 
                         context.threadId = Thread.currentThread().getId();
+                        context.niaRequest = true;
 
                         context.objectId = (long) param.args[0];
                         context.requestId = (int) param.args[1];
@@ -75,6 +82,11 @@ public class Injector implements IXposedHookLoadPackage {
                         context.requestHeaders = (String) param.args[4];
 
                         XposedBridge.log("[request] " + context.shortDump());
+
+                        // if modification of outbound data is not needed stop at bookkeeping
+                        // for current project scope early return is a valid choice
+                        if (doOutbound == false)
+                            return;
 
                         // read all data from original buffer that is available at the moment
 
@@ -136,7 +148,50 @@ public class Injector implements IXposedHookLoadPackage {
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         RpcContext context = rpcContext.get();
 
+                        context.niaResponse = true;
+                    }
+                });
+
+        // method is executed in unknown context, make sure this is response for NiaNet
+        findAndHookMethod(HttpURLConnection.class,
+                "getInputStream",
+                new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        RpcContext context = rpcContext.get();
+
+                        if (context.niaResponse == false)
+                            return;
+
                         XposedBridge.log("[response] " + context.shortDump());
+
+                        // if modification of inbound data is not needed stop at bookkeeping
+                        if (doInbound == false)
+                            return;
+
+                        InputStream source = (InputStream) param.getResult();
+                        // TODO more complex reading
+                        ByteBuffer unmodified = ByteBuffer.allocate(source.available());
+                        // TODO use arrayOffset?
+                        source.read(unmodified.array(), 0, unmodified.capacity());
+
+                        // TODO get rid of copy-paste
+
+                        unmodified.rewind();
+
+                        // a copy of buffer to be mangled by parsers
+                        // it will be used if processing returns true
+                        ByteBuffer modified = ByteBuffer.allocate(unmodified.capacity());
+                        modified.put(unmodified);
+                        modified.rewind();
+
+                        // process data
+                        boolean wasModified = DataHandler.processInboundPackage(context.requestId, modified);
+                        ByteBuffer toClient = wasModified ? modified : unmodified;
+
+                        // nastily replace
+                        ByteBufferBackedInputStream replacement = new ByteBufferBackedInputStream(toClient);
+                        param.setResult(replacement);
                     }
                 });
     }
