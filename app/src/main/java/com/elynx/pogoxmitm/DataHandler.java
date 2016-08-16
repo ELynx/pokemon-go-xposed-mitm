@@ -46,7 +46,7 @@ public class DataHandler {
      * data is created by allocate and had to have array
      * data is given here completely for destruction, it will be thrown away if false is returned
      * parseFrom seems to consume content of data, so unless it is reassembled DO return false,
-     * or nothing will reach actual net code
+     * or nothing will reach actual client code
      *
      * @param requestId ID of request to which data belongs
      * @param data      Data buffer to be processed
@@ -64,9 +64,9 @@ public class DataHandler {
             XposedBridge.log(e);
         }
 
-        XposedBridge.log("[request] " + Integer.toString(requestId) + "\n" + dataDump);
+        XposedBridge.log("[response] " + Integer.toString(requestId) + "\n" + dataDump);
 
-        // false means "throw away data and send what was meant to be sent"
+        // false means "throw away data and return what was meant to be returned"
         return false;
     }
 }
