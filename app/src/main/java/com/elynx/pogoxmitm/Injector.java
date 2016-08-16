@@ -1,5 +1,7 @@
 package com.elynx.pogoxmitm;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.ByteBuffer;
@@ -20,40 +22,38 @@ public class Injector implements IXposedHookLoadPackage {
 
     private static String[] Methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE"};
 
-    private static class RpcContext {
-        long threadId = 0L;
-        boolean niaRequest = false;
-        boolean niaResponse = false;
-
-        long objectId = 0L;
-        int requestId = 0;
-        String url;
-        String method;
-        String requestHeaders;
-        String responseHeaders;
-        int responseCode = 0;
-
-        public String shortDump() {
-            StringBuilder builder = new StringBuilder();
-
-            builder.append(Integer.toString(requestId));
-            //builder.append(":");
-            //builder.append(Long.toHexString(objectId));
-            builder.append(" ");
-            builder.append(method);
-            builder.append(" ");
-            builder.append(url);
-
-            return builder.toString();
-        }
-    }
-
     private static ThreadLocal<RpcContext> rpcContext = new ThreadLocal<RpcContext>() {
         @Override
         protected RpcContext initialValue() {
             return new RpcContext();
         }
     };
+
+    // from http://www.gregbugaj.com/?p=283
+    private ByteBuffer bufferFromStream(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        byte[] buffer = new byte[2048]; // TODO determine average response size
+        int read;
+        while ((read = inputStream.read(buffer, 0, buffer.length)) != -1) {
+            os.write(buffer, 0, read);
+        }
+        os.flush();
+
+        buffer = os.toByteArray();
+        return ByteBuffer.wrap(buffer);
+    }
+
+    private ByteBuffer copyBuffer(ByteBuffer original) throws IOException {
+        original.rewind();
+
+        ByteBuffer duplicate = ByteBuffer.allocate(original.capacity());
+        duplicate.put(original);
+
+        original.rewind();
+        duplicate.rewind();
+
+        return duplicate;
+    }
 
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
         if (!lpparam.packageName.equals("com.nianticlabs.pokemongo"))
@@ -91,7 +91,6 @@ public class Injector implements IXposedHookLoadPackage {
                         // read all data from original buffer that is available at the moment
 
                         ByteBuffer source = (ByteBuffer) param.args[5];
-                        // TODO Oracle docs says that remaining is bad...
                         ByteBuffer unmodified = ByteBuffer.allocate(source.remaining());
 
                         if (source.hasArray()) {
@@ -102,19 +101,12 @@ public class Injector implements IXposedHookLoadPackage {
                             // copy bytes from original to buffer
                             unmodified.put(source.array(), offset, length);
                         } else {
-                            // TODO fix in case of reading from stream
                             // let original pass bytes as it can
-                            // if original's capacity has not changed, then all should be fine
                             source.get(unmodified.array(), unmodified.arrayOffset(), unmodified.capacity());
                         }
 
-                        unmodified.rewind();
-
-                        // a copy of buffer to be mangled by parsers
-                        // it will be used if processing returns true
-                        ByteBuffer modified = ByteBuffer.allocate(unmodified.capacity());
-                        modified.put(unmodified);
-                        modified.rewind();
+                        // buffer to be torn apart by parsers
+                        ByteBuffer modified = copyBuffer(unmodified);
 
                         // process data
                         boolean wasModified = DataHandler.processOutboundPackage(context.requestId, modified);
@@ -171,20 +163,9 @@ public class Injector implements IXposedHookLoadPackage {
                             return;
 
                         InputStream source = (InputStream) param.getResult();
-                        // TODO more complex reading
-                        // TODO don't use available
-                        ByteBuffer unmodified = ByteBuffer.allocate(source.available());
-                        source.read(unmodified.array(), unmodified.arrayOffset(), unmodified.capacity());
-
-                        // TODO get rid of copy-paste
-
-                        unmodified.rewind();
-
-                        // a copy of buffer to be mangled by parsers
-                        // it will be used if processing returns true
-                        ByteBuffer modified = ByteBuffer.allocate(unmodified.capacity());
-                        modified.put(unmodified);
-                        modified.rewind();
+                        ByteBuffer unmodified = bufferFromStream(source);
+                        // TODO close stream?
+                        ByteBuffer modified = copyBuffer(unmodified);
 
                         // process data
                         boolean wasModified = DataHandler.processInboundPackage(context.requestId, modified);
