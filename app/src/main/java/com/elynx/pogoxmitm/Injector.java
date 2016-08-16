@@ -1,5 +1,7 @@
 package com.elynx.pogoxmitm;
 
+import android.os.Build;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +34,7 @@ public class Injector implements IXposedHookLoadPackage {
     // from http://www.gregbugaj.com/?p=283
     private ByteBuffer bufferFromStream(InputStream inputStream) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        byte[] buffer = new byte[2048]; // TODO determine average response size
+        byte[] buffer = new byte[4096]; // average response is around 3500 bytes
         int read;
         while ((read = inputStream.read(buffer, 0, buffer.length)) != -1) {
             os.write(buffer, 0, read);
@@ -58,6 +60,19 @@ public class Injector implements IXposedHookLoadPackage {
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
         if (!lpparam.packageName.equals("com.nianticlabs.pokemongo"))
             return;
+
+        // real Http class names are from
+        // https://goshin.github.io/2016/07/14/Black-box-test-using-Xposed/
+        String HttpURLConnectionImplName;
+        int apiLevel = Build.VERSION.SDK_INT;
+
+        if (apiLevel >= 23) {
+            HttpURLConnectionImplName = "com.android.okhttp.internal.huc.HttpURLConnectionImpl";
+        } else if (apiLevel >= 19 ) {
+            HttpURLConnectionImplName = "com.android.okhttp.internal.http.HttpURLConnectionImpl";
+        } else {
+            HttpURLConnectionImplName = "libcore.net.http.HttpURLConnectionImpl";
+        }
 
         XposedBridge.log("Injecting into PoGo");
 
@@ -146,7 +161,7 @@ public class Injector implements IXposedHookLoadPackage {
                 });
 
         // method is executed in unknown context, make sure this is response for NiaNet
-        findAndHookMethod(HttpURLConnection.class,
+        findAndHookMethod(HttpURLConnectionImplName, lpparam.classLoader,
                 "getInputStream",
                 new XC_MethodHook() {
                     @Override
