@@ -12,6 +12,9 @@ import de.robv.android.xposed.XposedBridge;
  * Should be made reentrant and synchronized, since it is called from threads
  */
 public class DataHandler {
+    public static boolean doIvHack = false;
+    public static boolean doSpeedHack = false;
+
     /**
      * Processes single package going from client to server
      * data is created by allocate and had to have array
