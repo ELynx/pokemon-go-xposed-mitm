@@ -1,5 +1,3 @@
 <resources>
     <string name="app_name">Pokemon Go Xposed Mitm</string>
-    <string name="ivHackText">View IV</string>
-    <string name="speedHackText">Stop driving warning</string>
 </resources>
