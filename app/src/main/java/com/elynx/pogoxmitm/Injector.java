@@ -123,7 +123,7 @@ public class Injector implements IXposedHookLoadPackage {
                         ByteBuffer modified = copyBuffer(unmodified);
 
                         // process data
-                        modified = DataHandler.processOutboundPackage(modified);
+                        modified = MitmProvider.processOutboundPackage(modified);
                         ByteBuffer toServer = modified != null ? modified : unmodified;
 
                         // prepare data for original method
@@ -182,7 +182,7 @@ public class Injector implements IXposedHookLoadPackage {
                         ByteBuffer modified = copyBuffer(unmodified);
 
                         // process data
-                        modified = DataHandler.processInboundPackage(modified);
+                        modified = MitmProvider.processInboundPackage(modified);
                         ByteBuffer toClient = modified != null ? modified : unmodified;
 
                         // nastily replace

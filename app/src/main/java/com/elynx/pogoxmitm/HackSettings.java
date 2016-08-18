@@ -28,25 +28,25 @@ public class HackSettings extends Activity implements CompoundButton.OnCheckedCh
     protected void saveSettings() {
         SharedPreferences pref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean("doIvHack", DataHandler.doIvHack);
-        editor.putBoolean("doSpeedHack", DataHandler.doSpeedHack);
+        editor.putBoolean("doIvHack", MitmProvider.doIvHack);
+        editor.putBoolean("doSpeedHack", MitmProvider.doSpeedHack);
         editor.commit();
     }
 
     protected void restoreSettings() {
         SharedPreferences pref = getPreferences(MODE_PRIVATE);
-        DataHandler.doIvHack = pref.getBoolean("doIvHack", true);
-        DataHandler.doSpeedHack = pref.getBoolean("doSpeedHack", false);
+        MitmProvider.doIvHack = pref.getBoolean("doIvHack", true);
+        MitmProvider.doSpeedHack = pref.getBoolean("doSpeedHack", false);
     }
 
     protected void setupScreen() {
         CheckBox ivCheckBox = (CheckBox) findViewById(R.id.ivCheckBox);
-        ivCheckBox.setChecked(DataHandler.doIvHack);
+        ivCheckBox.setChecked(MitmProvider.doIvHack);
         if (ivCheckBox.getOnFocusChangeListener() == null)
             ivCheckBox.setOnCheckedChangeListener(this);
 
         CheckBox speedCheckBox = (CheckBox) findViewById(R.id.speedCheckBox);
-        speedCheckBox.setChecked(DataHandler.doSpeedHack);
+        speedCheckBox.setChecked(MitmProvider.doSpeedHack);
         if (speedCheckBox.getOnFocusChangeListener() == null)
             speedCheckBox.setOnCheckedChangeListener(this);
     }
@@ -55,10 +55,10 @@ public class HackSettings extends Activity implements CompoundButton.OnCheckedCh
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.ivCheckBox:
-                DataHandler.doIvHack = isChecked;
+                MitmProvider.doIvHack = isChecked;
                 break;
             case R.id.speedCheckBox:
-                DataHandler.doSpeedHack = isChecked;
+                MitmProvider.doSpeedHack = isChecked;
                 break;
         }
 
