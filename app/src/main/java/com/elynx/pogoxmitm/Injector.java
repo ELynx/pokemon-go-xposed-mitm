@@ -19,12 +19,12 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
  * Class that manages injection of code into target app
  */
 public class Injector implements IXposedHookLoadPackage {
-    public static boolean doOutbound = false;
+    public static boolean doOutbound = true;
     public static boolean doInbound = true;
 
     private static String[] Methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE"};
 
-    private static ThreadLocal<RpcContext> rpcContext = new ThreadLocal<RpcContext>() {
+    public static ThreadLocal<RpcContext> rpcContext = new ThreadLocal<RpcContext>() {
         @Override
         protected RpcContext initialValue() {
             return new RpcContext();
@@ -68,7 +68,7 @@ public class Injector implements IXposedHookLoadPackage {
 
         if (apiLevel >= 23) {
             HttpURLConnectionImplName = "com.android.okhttp.internal.huc.HttpURLConnectionImpl";
-        } else if (apiLevel >= 19 ) {
+        } else if (apiLevel >= 19) {
             HttpURLConnectionImplName = "com.android.okhttp.internal.http.HttpURLConnectionImpl";
         } else {
             HttpURLConnectionImplName = "libcore.net.http.HttpURLConnectionImpl";
@@ -99,7 +99,6 @@ public class Injector implements IXposedHookLoadPackage {
                         XposedBridge.log("[request] " + context.shortDump());
 
                         // if modification of outbound data is not needed stop at bookkeeping
-                        // for current project scope early return is a valid choice
                         if (!doOutbound)
                             return;
 
@@ -124,8 +123,8 @@ public class Injector implements IXposedHookLoadPackage {
                         ByteBuffer modified = copyBuffer(unmodified);
 
                         // process data
-                        boolean wasModified = DataHandler.processOutboundPackage(context.requestId, modified);
-                        ByteBuffer toServer = wasModified ? modified : unmodified;
+                        modified = DataHandler.processOutboundPackage(modified);
+                        ByteBuffer toServer = modified != null ? modified : unmodified;
 
                         // prepare data for original method
                         toServer.rewind();
@@ -179,12 +178,12 @@ public class Injector implements IXposedHookLoadPackage {
 
                         InputStream source = (InputStream) param.getResult();
                         ByteBuffer unmodified = bufferFromStream(source);
-                        // TODO close stream?
+                        source.close();
                         ByteBuffer modified = copyBuffer(unmodified);
 
                         // process data
-                        boolean wasModified = DataHandler.processInboundPackage(context.requestId, modified);
-                        ByteBuffer toClient = wasModified ? modified : unmodified;
+                        modified = DataHandler.processInboundPackage(modified);
+                        ByteBuffer toClient = modified != null ? modified : unmodified;
 
                         // nastily replace
                         ByteBufferBackedInputStream replacement = new ByteBufferBackedInputStream(toClient);
