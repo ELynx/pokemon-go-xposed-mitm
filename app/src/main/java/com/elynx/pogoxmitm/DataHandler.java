@@ -3,7 +3,8 @@ package com.elynx.pogoxmitm;
 import com.github.aeonlucid.pogoprotos.Data;
 import com.github.aeonlucid.pogoprotos.Inventory;
 import com.github.aeonlucid.pogoprotos.Settings;
-import com.github.aeonlucid.pogoprotos.networking.Envelopes;
+import com.github.aeonlucid.pogoprotos.networking.Envelopes.RequestEnvelope;
+import com.github.aeonlucid.pogoprotos.networking.Envelopes.ResponseEnvelope;
 import com.github.aeonlucid.pogoprotos.networking.Requests;
 import com.github.aeonlucid.pogoprotos.networking.Responses;
 import com.google.protobuf.ByteString;
@@ -29,25 +30,24 @@ public class DataHandler {
      * parseFrom seems to consume content of data, so unless it is reassembled DO return false,
      * or nothing will reach actual net code
      *
-     * @param data Data buffer to be processed
+     * @param dataIn Data buffer to be processed
      * @return True if data was changed, false otherwise
      */
-    public static boolean processOutboundPackage(ByteBuffer data) throws Throwable {
-        Envelopes.RequestEnvelope request = Envelopes.RequestEnvelope.parseFrom(data.array());
-
+    public static ByteBuffer processOutboundPackage(ByteBuffer dataIn) throws Throwable {
         RpcContext context = Injector.rpcContext.get();
-
-        String dump = "Request types";
-
         context.serverRequestTypes.clear();
-        for (Requests.Request singleRequest : request.getRequestsList()) {
-            context.serverRequestTypes.add(singleRequest.getRequestType());
-            dump += " " + Integer.toString(singleRequest.getRequestTypeValue());
+
+        try {
+            RequestEnvelope request = RequestEnvelope.parseFrom(dataIn.array());
+
+            for (Requests.Request singleRequest : request.getRequestsList()) {
+                context.serverRequestTypes.add(singleRequest.getRequestType());
+            }
+        } catch (InvalidProtocolBufferException e) {
+            XposedBridge.log(e);
         }
 
-        XposedBridge.log("[PoGo-MITM INFO] " + dump);
-
-        return false;
+        return null;
     }
 
     /**
@@ -57,15 +57,16 @@ public class DataHandler {
      * parseFrom seems to consume content of data, so unless it is reassembled DO return false,
      * or nothing will reach actual client code
      *
-     * @param data Data buffer to be processed
+     * @param dataIn Data buffer to be processed
      * @return True if data was changed, false otherwise
      */
-    public static boolean processInboundPackage(ByteBuffer data) throws Throwable {
+    public static ByteBuffer processInboundPackage(ByteBuffer dataIn) throws Throwable {
         if (!doIvHack && !doSpeedHack)
-            return false;
+            return null;
 
         RpcContext context = Injector.rpcContext.get();
 
+        //<< this is only for performance, if parsing is slow
         boolean canBeModified = false;
 
         for (Requests.RequestType type : context.serverRequestTypes) {
@@ -84,21 +85,34 @@ public class DataHandler {
             }
         }
 
-        XposedBridge.log("[PoGo-MITM INFO] Attempt to modify " + Boolean.toString(canBeModified));
-
         if (!canBeModified)
-            return false;
+            return null;
+        //>>
 
         boolean wasModified = false;
 
         try {
-            Envelopes.ResponseEnvelope.Builder response = Envelopes.ResponseEnvelope.parseFrom(data.array()).toBuilder();
+            ResponseEnvelope.Builder response = ResponseEnvelope.parseFrom(dataIn.array()).toBuilder();
 
+            // TODO why this is happening? some requests don't end in returns?
             if (response.getReturnsCount() != context.serverRequestTypes.size()) {
-                XposedBridge.log("[PoGo-MITM ERROR] Request was " + Integer.toString(context.serverRequestTypes.size()) +
-                        " but response is " + Integer.toString(response.getReturnsCount()));
 
-                return false;
+                if (BuildConfig.DEBUG) {
+                    String infoDump = "[PoGo-MITM ERROR] Request for [" + Integer.toString(context.serverRequestTypes.size()) +
+                            "] items but response is [" + Integer.toString(response.getReturnsCount()) + "] items\n";
+
+                    infoDump += "Requested";
+
+                    for (Requests.RequestType type : context.serverRequestTypes) {
+                        infoDump += " " + type.toString();
+                    }
+
+                    infoDump += "\nResponded\n" + response.toString();
+
+                    XposedBridge.log(infoDump);
+                }
+
+                return null;
             }
 
             if (doIvHack) {
@@ -129,6 +143,8 @@ public class DataHandler {
 
                                         int total = (atk + def + sta) * 100 / 45;
 
+                                        String oldNickname = pokeBuilder.getNickname();
+
                                         String nickname = Integer.toString(total) + "%" +
                                                 " A" + Integer.toString(atk) +
                                                 " D" + Integer.toString(def) +
@@ -142,20 +158,20 @@ public class DataHandler {
 
                                         deltaHasPokemon = true;
 
-                                        XposedBridge.log("[PoGo-MITM] INFO " + nickname);
+                                        if (BuildConfig.DEBUG) {
+                                            XposedBridge.log("[PoGo-MITM] INFO <" + oldNickname + "> " + nickname);
+                                        }
                                     }
                                 }
-                            }
+                            } //end of delta->items
 
-                            if (deltaHasPokemon)
-                            {
+                            if (deltaHasPokemon) {
                                 inventoryResponseBuilder.setInventoryDelta(inventoryDeltaBuilder.build());
                                 invResponseModified = true;
                             }
-                        }
+                        } //end of delta
 
-                        if (invResponseModified)
-                        {
+                        if (invResponseModified) {
                             buf = inventoryResponseBuilder.build().toByteString();
                             response.setReturns(i, buf);
 
@@ -180,7 +196,9 @@ public class DataHandler {
                         gpsSettingsBuilder.setDrivingWarningSpeedMetersPerSecond(340.0f); // warn on one mach
                         float newLimit = gpsSettingsBuilder.getDrivingWarningSpeedMetersPerSecond();
 
-                        XposedBridge.log("[PoGo-MITM INFO] Change driving from " + Float.toString(oldLimit) + " to " + Float.toString(newLimit));
+                        if (BuildConfig.DEBUG) {
+                            XposedBridge.log("[PoGo-MITM INFO] Change driving from " + Float.toString(oldLimit) + " to " + Float.toString(newLimit));
+                        }
 
                         // and back
                         globalSettingsBuilder.setGpsSettings(gpsSettingsBuilder.build());
@@ -195,14 +213,12 @@ public class DataHandler {
             }
 
             if (wasModified) {
-                byte[] modified = response.build().toByteArray();
-                data = ByteBuffer.wrap(modified);
-                return true;
+                return ByteBuffer.wrap(response.build().toByteArray());
             }
         } catch (InvalidProtocolBufferException e) {
             XposedBridge.log(e);
         }
 
-        return false;
+        return null;
     }
 }

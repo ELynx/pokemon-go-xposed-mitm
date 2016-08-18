@@ -123,8 +123,8 @@ public class Injector implements IXposedHookLoadPackage {
                         ByteBuffer modified = copyBuffer(unmodified);
 
                         // process data
-                        boolean wasModified = DataHandler.processOutboundPackage(modified);
-                        ByteBuffer toServer = wasModified ? modified : unmodified;
+                        modified = DataHandler.processOutboundPackage(modified);
+                        ByteBuffer toServer = modified != null ? modified : unmodified;
 
                         // prepare data for original method
                         toServer.rewind();
@@ -178,12 +178,12 @@ public class Injector implements IXposedHookLoadPackage {
 
                         InputStream source = (InputStream) param.getResult();
                         ByteBuffer unmodified = bufferFromStream(source);
-                        // TODO close stream?
+                        source.close();
                         ByteBuffer modified = copyBuffer(unmodified);
 
                         // process data
-                        boolean wasModified = DataHandler.processInboundPackage(modified);
-                        ByteBuffer toClient = wasModified ? modified : unmodified;
+                        modified = DataHandler.processInboundPackage(modified);
+                        ByteBuffer toClient = modified != null ? modified : unmodified;
 
                         // nastily replace
                         ByteBufferBackedInputStream replacement = new ByteBufferBackedInputStream(toClient);
