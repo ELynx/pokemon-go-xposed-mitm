@@ -32,17 +32,27 @@ public class MitmProvider {
      * @return ByteBuffer with new content if data was changed, null otherwise
      */
     public static ByteBuffer processOutboundPackage(ByteBuffer roData) {
+        roData.rewind();
+
+        if (BuildConfig.DEBUG) {
+            XposedBridge.log("Processing outbound package of size " + Integer.toString(roData.remaining()));
+        }
+
         List<Requests.RequestType> types = requestTypes.get();
         types.clear();
 
         try {
-            byte[] buffer = roData.array().clone();
+            byte[] buffer = new byte[roData.remaining()];
+            roData.get(buffer);
+
             RequestEnvelope request = RequestEnvelope.parseFrom(buffer);
 
             for (Requests.Request singleRequest : request.getRequestsList()) {
                 types.add(singleRequest.getRequestType());
             }
         } catch (InvalidProtocolBufferException e) {
+            XposedBridge.log(e);
+        } catch (Throwable e) {
             XposedBridge.log(e);
         }
 
@@ -57,6 +67,12 @@ public class MitmProvider {
      * @return ByteBuffer with new content if data was changed, null otherwise
      */
     public static ByteBuffer processInboundPackage(ByteBuffer roData) {
+        roData.rewind();
+
+        if (BuildConfig.DEBUG) {
+            XposedBridge.log("Processing inbound package of size " + Integer.toString(roData.remaining()));
+        }
+
         List<Requests.RequestType> types = requestTypes.get();
 
         if (!types.contains(Requests.RequestType.GET_INVENTORY))
@@ -65,7 +81,9 @@ public class MitmProvider {
         boolean wasModified = false;
 
         try {
-            byte[] buffer = roData.array().clone();
+            byte[] buffer = new byte[roData.remaining()];
+            roData.get(buffer);
+
             ResponseEnvelope.Builder response = ResponseEnvelope.parseFrom(buffer).toBuilder();
 
             // TODO why this is happening? some requests don't end in returns?
@@ -104,6 +122,8 @@ public class MitmProvider {
                 return ByteBuffer.wrap(response.build().toByteArray());
             }
         } catch (InvalidProtocolBufferException e) {
+            XposedBridge.log(e);
+        } catch (Throwable e) {
             XposedBridge.log(e);
         }
 

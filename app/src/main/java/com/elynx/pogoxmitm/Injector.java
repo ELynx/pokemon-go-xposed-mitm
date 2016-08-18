@@ -121,6 +121,10 @@ public class Injector implements IXposedHookLoadPackage {
 
                         MitmOutputStream replacement = new MitmOutputStream((OutputStream) param.getResult());
                         param.setResult(replacement);
+
+                        if (BuildConfig.DEBUG) {
+                            XposedBridge.log("Output stream replaced");
+                        }
                     }
                 });
 
@@ -139,6 +143,10 @@ public class Injector implements IXposedHookLoadPackage {
 
                         MitmInputStream replacement = new MitmInputStream((InputStream) param.getResult());
                         param.setResult(replacement);
+
+                        if (BuildConfig.DEBUG) {
+                            XposedBridge.log("Input stream replaced");
+                        }
                     }
                 });
     }
