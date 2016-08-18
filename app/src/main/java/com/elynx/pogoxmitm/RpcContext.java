@@ -1,10 +1,5 @@
 package com.elynx.pogoxmitm;
 
-import com.github.aeonlucid.pogoprotos.networking.Requests;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Context of Rpc call in NiaNet
  */
@@ -20,8 +15,6 @@ class RpcContext {
     String requestHeaders;
     String responseHeaders;
     int responseCode = 0;
-
-    ArrayList<Requests.RequestType> serverRequestTypes = new ArrayList<>();
 
     public String shortDump() {
         return Integer.toString(requestId) + " " + method + " " + url;

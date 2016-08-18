@@ -18,9 +18,9 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
  * Class that manages injection of code into target app
  */
 public class Injector implements IXposedHookLoadPackage {
-    private static String[] Methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE"};
+    protected static String[] Methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE"};
 
-    public static ThreadLocal<RpcContext> rpcContext = new ThreadLocal<RpcContext>() {
+    protected static ThreadLocal<RpcContext> rpcContext = new ThreadLocal<RpcContext>() {
         @Override
         protected RpcContext initialValue() {
             return new RpcContext();
@@ -68,6 +68,14 @@ public class Injector implements IXposedHookLoadPackage {
                         context.url = (String) param.args[2];
                         context.method = Methods[(int) param.args[3]];
                         context.requestHeaders = (String) param.args[4];
+                    }
+
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        // radical option
+                        // rpcContext.remove();
+
+                        rpcContext.set(new RpcContext());
                     }
                 });
 
