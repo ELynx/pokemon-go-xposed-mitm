@@ -2,9 +2,8 @@ package com.elynx.pogoxmitm;
 
 import android.os.Build;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.ByteBuffer;
 
@@ -19,9 +18,6 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
  * Class that manages injection of code into target app
  */
 public class Injector implements IXposedHookLoadPackage {
-    public static boolean doOutbound = true;
-    public static boolean doInbound = true;
-
     private static String[] Methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE"};
 
     public static ThreadLocal<RpcContext> rpcContext = new ThreadLocal<RpcContext>() {
@@ -30,32 +26,6 @@ public class Injector implements IXposedHookLoadPackage {
             return new RpcContext();
         }
     };
-
-    // from http://www.gregbugaj.com/?p=283
-    private ByteBuffer bufferFromStream(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        byte[] buffer = new byte[4096]; // average response is around 3500 bytes
-        int read;
-        while ((read = inputStream.read(buffer, 0, buffer.length)) != -1) {
-            os.write(buffer, 0, read);
-        }
-        os.flush();
-
-        buffer = os.toByteArray();
-        return ByteBuffer.wrap(buffer);
-    }
-
-    private ByteBuffer copyBuffer(ByteBuffer original) throws IOException {
-        original.rewind();
-
-        ByteBuffer duplicate = ByteBuffer.allocate(original.capacity());
-        duplicate.put(original);
-
-        original.rewind();
-        duplicate.rewind();
-
-        return duplicate;
-    }
 
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
         if (!lpparam.packageName.equals("com.nianticlabs.pokemongo"))
@@ -76,6 +46,9 @@ public class Injector implements IXposedHookLoadPackage {
 
         XposedBridge.log("Injecting into PoGo");
 
+        // methods below are roughly in order or being called
+        // note that joinHeaders and readDataStream are called from doSyncRequest
+
         // method is executed in thread context
         findAndHookMethod("com.nianticlabs.nia.network.NiaNet", lpparam.classLoader,
                 //               0 object id 1 id       2 url         3 method   4 headers     5 buffer          6 offset   7 size
@@ -95,42 +68,6 @@ public class Injector implements IXposedHookLoadPackage {
                         context.url = (String) param.args[2];
                         context.method = Methods[(int) param.args[3]];
                         context.requestHeaders = (String) param.args[4];
-
-                        XposedBridge.log("[request] " + context.shortDump());
-
-                        // if modification of outbound data is not needed stop at bookkeeping
-                        if (!doOutbound)
-                            return;
-
-                        // read all data from original buffer that is available at the moment
-
-                        ByteBuffer source = (ByteBuffer) param.args[5];
-                        ByteBuffer unmodified = ByteBuffer.allocate(source.remaining());
-
-                        if (source.hasArray()) {
-                            // make size calculations
-                            int offset = source.arrayOffset() + (int) param.args[6];
-                            int length = Math.min((int) param.args[7], unmodified.capacity());
-
-                            // copy bytes from original to buffer
-                            unmodified.put(source.array(), offset, length);
-                        } else {
-                            // let original pass bytes as it can
-                            source.get(unmodified.array(), unmodified.arrayOffset(), unmodified.capacity());
-                        }
-
-                        // buffer to be torn apart by parsers
-                        ByteBuffer modified = copyBuffer(unmodified);
-
-                        // process data
-                        modified = MitmProvider.processOutboundPackage(modified);
-                        ByteBuffer toServer = modified != null ? modified : unmodified;
-
-                        // prepare data for original method
-                        toServer.rewind();
-                        param.args[5] = toServer;
-                        param.args[6] = toServer.arrayOffset();
-                        param.args[7] = toServer.remaining();
                     }
                 });
 
@@ -161,6 +98,24 @@ public class Injector implements IXposedHookLoadPackage {
 
         // method is executed in unknown context, make sure this is response for NiaNet
         findAndHookMethod(HttpURLConnectionImplName, lpparam.classLoader,
+                "getOutputStream",
+                new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        RpcContext context = rpcContext.get();
+
+                        if (!context.niaRequest)
+                            return;
+
+                        XposedBridge.log("[request] " + context.shortDump());
+
+                        MitmOutputStream replacement = new MitmOutputStream((OutputStream) param.getResult());
+                        param.setResult(replacement);
+                    }
+                });
+
+        // method is executed in unknown context, make sure this is response for NiaNet
+        findAndHookMethod(HttpURLConnectionImplName, lpparam.classLoader,
                 "getInputStream",
                 new XC_MethodHook() {
                     @Override
@@ -172,21 +127,7 @@ public class Injector implements IXposedHookLoadPackage {
 
                         XposedBridge.log("[response] " + context.shortDump());
 
-                        // if modification of inbound data is not needed stop at bookkeeping
-                        if (!doInbound)
-                            return;
-
-                        InputStream source = (InputStream) param.getResult();
-                        ByteBuffer unmodified = bufferFromStream(source);
-                        source.close();
-                        ByteBuffer modified = copyBuffer(unmodified);
-
-                        // process data
-                        modified = MitmProvider.processInboundPackage(modified);
-                        ByteBuffer toClient = modified != null ? modified : unmodified;
-
-                        // nastily replace
-                        ByteBufferBackedInputStream replacement = new ByteBufferBackedInputStream(toClient);
+                        MitmInputStream replacement = new MitmInputStream((InputStream) param.getResult());
                         param.setResult(replacement);
                     }
                 });
