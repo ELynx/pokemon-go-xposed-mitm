@@ -21,7 +21,7 @@ import de.robv.android.xposed.XposedBridge;
 public class DataHandler {
     // TODO actually connect to settings...
     public static boolean doIvHack = true;
-    public static boolean doSpeedHack = true;
+    public static boolean doSpeedHack = false;
 
     /**
      * Processes single package going from client to server
