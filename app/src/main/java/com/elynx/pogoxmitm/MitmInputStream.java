@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Implements input stream that asks MITM provider before giving data away
- *
+ * <p/>
  * Based on answer on StackOverflow
  * https://stackoverflow.com/questions/4332264/wrapping-a-bytebuffer-with-an-inputstream/6603018#6603018
  */
@@ -28,8 +28,9 @@ public class MitmInputStream extends InputStream {
             while ((bytesRead = target.read(bytes, 0, bytes.length)) != -1) {
                 os.write(bytes, 0, bytesRead);
             }
-            target.close();
             os.flush();
+
+            target.close();
         } catch (IOException e) {
             os.reset();
         }

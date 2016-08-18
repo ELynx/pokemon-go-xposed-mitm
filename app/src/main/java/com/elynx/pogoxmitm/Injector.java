@@ -31,7 +31,9 @@ public class Injector implements IXposedHookLoadPackage {
         if (!lpparam.packageName.equals("com.nianticlabs.pokemongo"))
             return;
 
-        // real Http class names are from
+        String NiaNetName = "com.nianticlabs.nia.network.NiaNet";
+
+        // real http class names are from
         // https://goshin.github.io/2016/07/14/Black-box-test-using-Xposed/
         String HttpURLConnectionImplName;
         int apiLevel = Build.VERSION.SDK_INT;
@@ -47,10 +49,10 @@ public class Injector implements IXposedHookLoadPackage {
         XposedBridge.log("Injecting into PoGo");
 
         // methods below are roughly in order or being called
-        // note that joinHeaders and readDataStream are called from doSyncRequest
+        // note that joinHeaders and readDataSteam are called from doSyncRequest
 
         // method is executed in thread context
-        findAndHookMethod("com.nianticlabs.nia.network.NiaNet", lpparam.classLoader,
+        findAndHookMethod(NiaNetName, lpparam.classLoader,
                 //               0 object id 1 id       2 url         3 method   4 headers     5 buffer          6 offset   7 size
                 "doSyncRequest", long.class, int.class, String.class, int.class, String.class, ByteBuffer.class, int.class, int.class,
                 new XC_MethodHook() {
@@ -80,7 +82,7 @@ public class Injector implements IXposedHookLoadPackage {
                 });
 
         // method is executed in thread context
-        findAndHookMethod("com.nianticlabs.nia.network.NiaNet", lpparam.classLoader,
+        findAndHookMethod(NiaNetName, lpparam.classLoader,
                 "joinHeaders", HttpURLConnection.class,
                 new XC_MethodHook() {
                     @Override
@@ -93,7 +95,7 @@ public class Injector implements IXposedHookLoadPackage {
                 });
 
         // method is executed in thread context
-        findAndHookMethod("com.nianticlabs.nia.network.NiaNet", lpparam.classLoader,
+        findAndHookMethod(NiaNetName, lpparam.classLoader,
                 "readDataSteam", HttpURLConnection.class,
                 new XC_MethodHook() {
                     @Override
