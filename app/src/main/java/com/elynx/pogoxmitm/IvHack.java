@@ -2,6 +2,7 @@ package com.elynx.pogoxmitm;
 
 import com.github.aeonlucid.pogoprotos.Data;
 import com.github.aeonlucid.pogoprotos.Inventory;
+import com.github.aeonlucid.pogoprotos.networking.Requests;
 import com.github.aeonlucid.pogoprotos.networking.Responses;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -10,6 +11,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * Class that shows IVs for pokemon in nickname
  */
 public class IvHack {
+    public static Requests.RequestType monitoredType() { return Requests.RequestType.GET_INVENTORY; }
+
     public static ByteString hack(ByteString response) throws InvalidProtocolBufferException {
         Responses.GetInventoryResponse.Builder inventoryResponseBuilder = Responses.GetInventoryResponse.parseFrom(response).toBuilder();
 

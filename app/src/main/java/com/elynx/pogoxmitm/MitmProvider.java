@@ -75,7 +75,7 @@ public class MitmProvider {
 
         List<Requests.RequestType> types = requestTypes.get();
 
-        if (!types.contains(Requests.RequestType.GET_INVENTORY))
+        if (!types.contains(IvHack.monitoredType()) && !types.contains(FortHack.monitoredType()))
             return null;
 
         boolean wasModified = false;
@@ -108,13 +108,19 @@ public class MitmProvider {
             }
 
             for (int returnNo = 0; returnNo < types.size(); ++returnNo) {
-                if (types.get(returnNo) == Requests.RequestType.GET_INVENTORY) {
-                    ByteString hacked = IvHack.hack(response.getReturns(returnNo));
+                ByteString hacked = null;
 
-                    if (hacked != null) {
-                        response.setReturns(returnNo, hacked);
-                        wasModified = true;
-                    }
+                if (types.get(returnNo) == IvHack.monitoredType()) {
+                    hacked = IvHack.hack(response.getReturns(returnNo));
+                }
+
+                if (types.get(returnNo) == FortHack.monitoredType()) {
+                    hacked = FortHack.hack(response.getReturns(returnNo));
+                }
+
+                if (hacked != null) {
+                    response.setReturns(returnNo, hacked);
+                    wasModified = true;
                 }
             }
 
