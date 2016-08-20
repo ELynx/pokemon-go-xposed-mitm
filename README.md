@@ -1,4 +1,6 @@
 #Pokemon GO (c) direct Man-in-the-Middle
+![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.33.0-blue.svg?style=flat-square")
+![license](https://img.shields.io/github/license/ELynx/pokemon-go-xposed-mitm.svg)
 ##Pre-build version
 You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm)
 
@@ -13,7 +15,9 @@ Intercept packages going from client to server, parse them with protobuf; all wi
 
 Intercept packages going from server to client, and parse them too, with remembered request types.
 
-Simple POC hack to put IVs into pokemon nickname.
+Simple hack to put IVs into pokemon nickname.
+
+Simple hack to put remaining lure time into pokestop description.
 ##What is planned
 Grandeur plan - use JRuby to allow different data modifications without recompilation.
 ##Resources and projects used
