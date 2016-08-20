@@ -2,7 +2,7 @@
 ![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.33.0-blue.svg?style=flat-square")
 ![license](https://img.shields.io/github/license/ELynx/pokemon-go-xposed-mitm.svg)
 ##Pre-build version
-You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm)
+You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm).
 
 Make sure to turn on Beta modules visibility to see it.
 
