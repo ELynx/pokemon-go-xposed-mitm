@@ -17,7 +17,9 @@ import de.robv.android.xposed.XposedBridge;
  * Class that shows some more info for fort
  */
 public class FortHack {
-    public static Requests.RequestType monitoredType() { return Requests.RequestType.FORT_DETAILS; }
+    public static Requests.RequestType monitoredType() {
+        return Requests.RequestType.FORT_DETAILS;
+    }
 
     public static ByteString hack(ByteString response) throws InvalidProtocolBufferException {
         Responses.FortDetailsResponse.Builder fortBuilder = Responses.FortDetailsResponse.parseFrom(response).toBuilder();
@@ -78,22 +80,33 @@ public class FortHack {
             long delta = expires - now;
 
             if (delta > 0) {
-                // add player info
-                String moreInfo = "Lure by " + mod.getDeployerPlayerCodename() + "\n";
+                // add player info - tmi
+                //String moreInfo = "Lure by " + mod.getDeployerPlayerCodename() + "\n";
+                String moreInfo = "";
 
                 // add expiration time
                 long minutes = TimeUnit.MILLISECONDS.toMinutes(delta);
                 delta -= TimeUnit.MINUTES.toMillis(minutes);
                 long seconds = TimeUnit.MILLISECONDS.toSeconds(delta);
 
-                moreInfo += "Expires in " + Long.toString(minutes) + "m";
-                if (minutes < 5) {
-                    moreInfo += " " + Long.toString(seconds) + "s";
+                if (minutes > 0) {
+                    moreInfo += Long.toString(minutes) + "m";
                 }
-                moreInfo += "\n";
 
-                // retain original description
-                moreInfo += builder.getDescription();
+                if (minutes < 5) {
+                    if (seconds > 0) {
+                        if (moreInfo.length() > 0) {
+                            moreInfo += " ";
+                        }
+
+                        moreInfo += Long.toString(seconds) + "s";
+                    }
+                }
+                
+                moreInfo += " left";
+
+                // retain original description - tmi
+                // moreInfo += "\n" + builder.getDescription();
 
                 builder.setDescription(moreInfo);
 
