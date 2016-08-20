@@ -1,8 +1,12 @@
 #Pokemon GO (c) direct Man-in-the-Middle
+![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.33.0-blue.svg?style=flat-square")
+![license](https://img.shields.io/github/license/ELynx/pokemon-go-xposed-mitm.svg)
 ##Pre-build version
-You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm)
+You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm).
 
 Make sure to turn on Beta modules visibility to see it.
+
+If you want to help project, try Alpha/Experimental version, and give feedback on Reddit.
 ##Brief
 Uses XPosed framework to intercept web communications of app and modify out- and inbound packages.
 
@@ -13,7 +17,11 @@ Intercept packages going from client to server, parse them with protobuf; all wi
 
 Intercept packages going from server to client, and parse them too, with remembered request types.
 
-Simple POC hack to put IVs into pokemon nickname.
+Simple hack to put IVs into pokemon nickname.
+###Branch right-now, as released on XPosed repo
+[Alpha] Simple hack to put remaining lure time into pokestop description.
+
+[Alpha] UI for turning hacks on and off.
 ##What is planned
 Grandeur plan - use JRuby to allow different data modifications without recompilation.
 ##Resources and projects used
