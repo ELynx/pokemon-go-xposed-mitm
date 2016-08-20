@@ -7,6 +7,12 @@ import com.github.aeonlucid.pogoprotos.networking.Responses;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import java.util.Date;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import de.robv.android.xposed.XposedBridge;
+
 /**
  * Class that shows some more info for fort
  */
@@ -21,22 +27,77 @@ public class FortHack {
 
             for (int modNo = 0; modNo < fortBuilder.getModifiersCount(); ++modNo) {
                 Fort.FortModifier mod = fortBuilder.getModifiers(modNo);
+                Responses.FortDetailsResponse.Builder changedBuilder = addModInfo(fortBuilder, mod);
 
-                if (mod.getItemId() == Item.ItemId.ITEM_TROY_DISK) {
-                    long unixTimeExpire = mod.getExpirationTimestampMs();
-                    String moreInfo = "Lure by " + mod.getDeployerPlayerCodename() + " ";
-
-                    // TODO nice time
-
-                    moreInfo += "\n" + fortBuilder.getDescription();
-                    fortBuilder.setDescription(moreInfo);
-
+                if (changedBuilder != null) {
+                    fortBuilder = changedBuilder;
                     modified = true;
                 }
             }
 
             if (modified) {
                 return fortBuilder.build().toByteString();
+            }
+
+            // to debug visual appearance of info - pretend that some mod was found
+            // will affect only fort description
+            if (BuildConfig.DEBUG) {
+                Fort.FortModifier.Builder debugMod = Fort.FortModifier.newBuilder();
+
+                debugMod.setDeployerPlayerCodename("Prof. Willow");
+                debugMod.setItemId(Item.ItemId.ITEM_TROY_DISK);
+
+                // make possible to be already expired ~ one in seven checks
+                long randomRemaining = (new Random().nextLong()) % TimeUnit.MINUTES.toMillis(35);
+                randomRemaining -= TimeUnit.MINUTES.toMillis(5);
+                long expiration = new Date().getTime() + randomRemaining;
+
+                debugMod.setExpirationTimestampMs(expiration);
+
+                Responses.FortDetailsResponse.Builder changedBuilder = addModInfo(fortBuilder, debugMod.build());
+
+                if (changedBuilder != null) {
+                    fortBuilder = changedBuilder;
+
+                    return fortBuilder.build().toByteString();
+                }
+
+                if (randomRemaining > 0) {
+                    XposedBridge.log("[PoGo MITM] ERROR For not expired mod no changes were made");
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected static Responses.FortDetailsResponse.Builder addModInfo(Responses.FortDetailsResponse.Builder builder, Fort.FortModifier mod) {
+        if (mod.getItemId() == Item.ItemId.ITEM_TROY_DISK) {
+            long expires = mod.getExpirationTimestampMs();
+            long now = new Date().getTime();
+            long delta = expires - now;
+
+            if (delta > 0) {
+                // add player info
+                String moreInfo = "Lure by " + mod.getDeployerPlayerCodename() + "\n";
+
+                // add expiration time
+                long minutes = TimeUnit.MILLISECONDS.toMinutes(delta);
+                delta -= TimeUnit.MINUTES.toMillis(minutes);
+                long seconds = TimeUnit.MILLISECONDS.toSeconds(delta);
+
+                moreInfo += "Expires in " + Long.toString(minutes) + "m";
+                if (minutes < 5) {
+                    moreInfo += " " + Long.toString(seconds) + "s";
+                }
+                moreInfo += "\n";
+
+                // retain original description
+                moreInfo += builder.getDescription();
+
+                builder.setDescription(moreInfo);
+
+                return builder;
             }
         }
 
