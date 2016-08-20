@@ -12,6 +12,7 @@ public class MitmOutputStream extends ByteArrayOutputStream {
     OutputStream target;
 
     public MitmOutputStream(OutputStream target) {
+        super(2048); // average request is around 1500 bytes
         this.target = target;
     }
 
