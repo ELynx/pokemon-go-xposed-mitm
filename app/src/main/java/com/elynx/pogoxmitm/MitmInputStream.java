@@ -19,9 +19,11 @@ public class MitmInputStream extends InputStream {
         // read all data from target into buffer
         // from http://www.gregbugaj.com/?p=283
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        int AverageRequestSize = 4096; // average response is around 3500 bytes
 
-        byte[] bytes = new byte[4096]; // average response is around 3500 bytes
+        ByteArrayOutputStream os = new ByteArrayOutputStream(AverageRequestSize);
+
+        byte[] bytes = new byte[AverageRequestSize];
         int bytesRead;
 
         try {
