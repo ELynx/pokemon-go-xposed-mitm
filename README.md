@@ -19,7 +19,7 @@ Intercept packages going from server to client, and parse them too, with remembe
 
 Simple hack to put IVs into pokemon nickname.
 ###Branch right-now, as released on XPosed repo
-[Alpha]Simple hack to put remaining lure time into pokestop description.
+[Alpha] Simple hack to put remaining lure time into pokestop description.
 
 [Alpha] UI for turning hacks on and off.
 ##What is planned
