@@ -75,7 +75,10 @@ public class MitmProvider {
 
         List<Requests.RequestType> types = requestTypes.get();
 
-        if (!types.contains(IvHack.monitoredType()) && !types.contains(FortHack.monitoredType()))
+        boolean doIvHack = Injector.doIvHack && types.contains(IvHack.monitoredType());
+        boolean doFortHack = Injector.doFortHack && types.contains(FortHack.monitoredType());
+
+        if (!doIvHack && !doFortHack)
             return null;
 
         boolean wasModified = false;
@@ -110,11 +113,11 @@ public class MitmProvider {
             for (int returnNo = 0; returnNo < types.size(); ++returnNo) {
                 ByteString hacked = null;
 
-                if (types.get(returnNo) == IvHack.monitoredType()) {
+                if (doIvHack && types.get(returnNo) == IvHack.monitoredType()) {
                     hacked = IvHack.hack(response.getReturns(returnNo));
                 }
 
-                if (types.get(returnNo) == FortHack.monitoredType()) {
+                if (doFortHack && types.get(returnNo) == FortHack.monitoredType()) {
                     hacked = FortHack.hack(response.getReturns(returnNo));
                 }
 

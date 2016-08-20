@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="pref_iv"
+        android:defaultValue="true"
+        android:title="@string/pref_iv"
+        android:summary="@string/pref_iv_sum" />
+
+    <CheckBoxPreference
+        android:key="pref_fort"
+        android:defaultValue="false"
+        android:title="@string/pref_fort"
+        android:summary="@string/pref_fort_sum" />
+</PreferenceScreen>

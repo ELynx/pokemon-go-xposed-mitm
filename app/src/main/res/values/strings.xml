@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Pokemon Go Xposed Mitm</string>
+    <string name="pref_iv">Show IVs</string>
+    <string name="pref_iv_sum">Show IVs in nickname (not permanent, client-only)</string>
+    <string name="pref_fort">Show lure time</string>
+    <string name="pref_fort_sum">Show remaining time of a lure module in pokestop description</string>
 </resources>
