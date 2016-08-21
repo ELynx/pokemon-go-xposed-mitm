@@ -17,11 +17,11 @@ import de.robv.android.xposed.XposedBridge;
  * Class that shows some more info for fort
  */
 public class FortHack {
-    public static Requests.RequestType monitoredType() {
-        return Requests.RequestType.FORT_DETAILS;
+    public static boolean isMonitoredType(Requests.RequestType type) {
+        return type == Requests.RequestType.FORT_DETAILS;
     }
 
-    public static ByteString hack(ByteString response) throws InvalidProtocolBufferException {
+    public static ByteString hack(ByteString response, Requests.RequestType type) throws InvalidProtocolBufferException {
         Responses.FortDetailsResponse.Builder fortBuilder = Responses.FortDetailsResponse.parseFrom(response).toBuilder();
 
         if (fortBuilder.getType() == Fort.FortType.CHECKPOINT) {
