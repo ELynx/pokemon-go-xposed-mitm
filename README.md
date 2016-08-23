@@ -1,6 +1,9 @@
 #Pokemon GO (c) direct Man-in-the-Middle
 ![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.33.0-blue.svg?style=flat-square")
+![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.35.0-red.svg?style=flat-square")
 ![license](https://img.shields.io/github/license/ELynx/pokemon-go-xposed-mitm.svg)
+
+Module is being field-tested with 0.35.0, so far there is no problems.
 ##Pre-build version
 You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm).
 
