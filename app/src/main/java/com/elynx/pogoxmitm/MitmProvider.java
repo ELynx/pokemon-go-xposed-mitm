@@ -11,7 +11,8 @@ import de.robv.android.xposed.XposedBridge;
  * Should be made reentrant and synchronized, since it is called from threads
  */
 public class MitmProvider {
-    protected static ThreadLocal<ScriptingContainer> scriptContainer = new ThreadLocal<ScriptingContainer>() {
+    // TODO protected again
+    public static ThreadLocal<ScriptingContainer> scriptContainer = new ThreadLocal<ScriptingContainer>() {
         @Override
         protected ScriptingContainer initialValue() {
             return new ScriptingContainer();

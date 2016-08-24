@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Pokemon Go Xposed Mitm</string>
+    <string name="ruby_that">Ruby that!</string>
 </resources>
