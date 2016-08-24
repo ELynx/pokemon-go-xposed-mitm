@@ -22,5 +22,4 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     provided 'de.robv.android.xposed:api:53'
     provided 'de.robv.android.xposed:api:53:sources'
-    compile 'com.google.protobuf:protobuf-java:3.0.0'
 }

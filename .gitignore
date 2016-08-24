@@ -84,5 +84,10 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-/protoc.exe
+
+# Misc - related to IDEs and so on
 /.idea/inspectionProfiles
+
+# Misc - related to project build and dependencies
+/protoc.exe
+/app/libs

@@ -1,14 +1,17 @@
 // get protoc version 3 here https://github.com/google/protobuf/releases
 // put protoc to root repo folder or change path
+// get jruby here http://jruby.org/download
+// used release is JRuby 9.1.2.0
+// put jruby.jar from there to app->libs
 
 task pogoProtosWin(type: Exec){
     workingDir './POGOProtos'
-    commandLine 'cmd', '/c', 'compile_pretty.py java -p ../protoc -o ../app/src/main/java'
+    commandLine 'cmd', '/c', 'compile_pretty.py ruby -p ../protoc -o ../app/src/main/assets/scripts'
 }
 
 task pogoProtosNix(type: Exec){
     workingDir './POGOProtos'
-    commandLine './compile_pretty.py java -p ../protoc -o ../app/src/main/java'
+    commandLine './compile_pretty.py ruby -p ../protoc -o ../app/src/main/assets/scripts'
 }
 
 buildscript {
