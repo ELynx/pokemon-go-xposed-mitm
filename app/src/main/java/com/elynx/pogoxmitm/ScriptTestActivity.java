@@ -34,7 +34,16 @@ public class ScriptTestActivity extends Activity {
                     }
                 }
                 catch (Throwable e) {
-                    resultEdit.setText(e.getMessage());
+                    String message = e.getMessage();
+
+                    if (message == null)
+                        message = "No message\n";
+                    else
+                        message = message + "\n";
+
+                    message += e.toString();
+
+                    resultEdit.setText(message);
                 }
             }
         });
