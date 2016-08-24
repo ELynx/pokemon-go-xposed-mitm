@@ -1,8 +1,11 @@
 // get protoc version 3 here https://github.com/google/protobuf/releases
 // put protoc to root repo folder or change path
-// get jruby here http://jruby.org/download
-// used release is JRuby 9.1.2.0
-// put jruby.jar from there to app->libs
+
+// get jruby-jars gem, good starting point is http://jruby.org/download
+// navigate to that gem internals
+// take jruby-core-VERSION-complete.jar and jruby-stdlib-VERSION.jar from there to app->libs
+// app was build using version 9.1.2.0
+// remember to respect all licenses that Ruby and JRuby use
 
 task pogoProtosWin(type: Exec){
     workingDir './POGOProtos'

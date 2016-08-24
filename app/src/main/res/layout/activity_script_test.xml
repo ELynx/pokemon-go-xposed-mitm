@@ -25,10 +25,11 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:ems="10"
-            android:id="@+id/rubyText"
+            android:id="@+id/rubyScript"
             android:layout_gravity="top|center_horizontal"
             android:layout_weight="10"
-            android:text="return &quot;Test&quot;" />
+            android:text="return &quot;Test&quot;"
+            android:typeface="monospace" />
 
         <EditText
             android:layout_width="fill_parent"
@@ -37,13 +38,14 @@
             android:ems="10"
             android:id="@+id/rubyResult"
             android:layout_weight="4"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            android:layout_gravity="top|center_horizontal" />
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/ruby_that"
-            android:id="@+id/rubyButton"
+            android:id="@+id/rubyRun"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_weight="1"
             android:clickable="false"

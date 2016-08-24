@@ -1,51 +1,53 @@
 package com.elynx.pogoxmitm;
 
-import org.jruby.embed.ScriptingContainer;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class ScriptTestActivity extends Activity {
+public class ScriptTestActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_script_test);
 
-        Button rubyButton = (Button) findViewById(R.id.rubyButton);
-        rubyButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                EditText scriptEdit = (EditText) findViewById(R.id.rubyText);
-                EditText resultEdit = (EditText) findViewById(R.id.rubyResult);
+        Button rubyButton = (Button) findViewById(R.id.rubyRun);
+        rubyButton.setOnClickListener(this);
+    }
 
-                String scriptToRun = scriptEdit.getText().toString();
-                ScriptingContainer container = MitmProvider.scriptContainer.get();
+    @Override
+    public void onClick(View v) {
+        if (v.getId() != R.id.rubyRun)
+            return;
 
-                try {
-                    Object retval = container.runScriptlet(scriptToRun);
+        EditText scriptEdit = (EditText) findViewById(R.id.rubyScript);
+        EditText resultEdit = (EditText) findViewById(R.id.rubyResult);
 
-                    if (retval != null) {
-                        resultEdit.setText(retval.toString());
-                    } else {
-                        resultEdit.setText("null returned");
-                    }
-                }
-                catch (Throwable e) {
-                    String message = e.getMessage();
+        String scriptToRun = scriptEdit.getText().toString();
+        String runResult;
 
-                    if (message == null)
-                        message = "No message\n";
-                    else
-                        message = message + "\n";
+        try {
+            Object rc = MitmProvider.scriptingContainer.runScriptlet(scriptToRun);
 
-                    message += e.toString();
+            if (rc == null)
+                runResult = "Null returned";
+            else
+                runResult = rc.toString();
+        } catch (Throwable e) {
+            String message = e.getMessage();
 
-                    resultEdit.setText(message);
-                }
-            }
-        });
+            if (message == null)
+                message = "No message\n";
+            else
+                message = message + "\n";
+
+            message += e.toString();
+
+            runResult = "Exception:\n" + message;
+        }
+
+        resultEdit.setText(runResult);
     }
 }

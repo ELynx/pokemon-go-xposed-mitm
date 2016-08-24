@@ -1,5 +1,6 @@
 package com.elynx.pogoxmitm;
 
+import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.ScriptingContainer;
 
 import java.nio.ByteBuffer;
@@ -11,13 +12,8 @@ import de.robv.android.xposed.XposedBridge;
  * Should be made reentrant and synchronized, since it is called from threads
  */
 public class MitmProvider {
-    // TODO protected again
-    public static ThreadLocal<ScriptingContainer> scriptContainer = new ThreadLocal<ScriptingContainer>() {
-        @Override
-        protected ScriptingContainer initialValue() {
-            return new ScriptingContainer();
-        }
-    };
+    // TODO make protected
+    public static final ScriptingContainer scriptingContainer = new ScriptingContainer(LocalContextScope.SINGLETON);
 
     /**
      * Processes single package going from client to server
@@ -37,8 +33,9 @@ public class MitmProvider {
             //byte[] buffer = new byte[roData.remaining()];
             //roData.get(buffer);
 
-            ScriptingContainer container = scriptContainer.get();
-            container.runScriptlet("puts 'Request!'");
+            synchronized (scriptingContainer) {
+                scriptingContainer.runScriptlet("puts 'Request'");
+            }
         } catch (Throwable e) {
             XposedBridge.log(e);
         }
@@ -64,8 +61,9 @@ public class MitmProvider {
             //byte[] buffer = new byte[roData.remaining()];
             //roData.get(buffer);
 
-            ScriptingContainer container = scriptContainer.get();
-            container.runScriptlet("puts 'Response!'");
+            synchronized (scriptingContainer) {
+                scriptingContainer.runScriptlet("puts 'Response'");
+            }
         } catch (Throwable e) {
             XposedBridge.log(e);
         }
