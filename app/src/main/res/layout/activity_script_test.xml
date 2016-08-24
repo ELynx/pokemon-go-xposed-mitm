@@ -36,7 +36,8 @@
             android:inputType="textMultiLine"
             android:ems="10"
             android:id="@+id/rubyResult"
-            android:layout_weight="4" />
+            android:layout_weight="4"
+            android:typeface="monospace" />
 
         <Button
             android:layout_width="fill_parent"

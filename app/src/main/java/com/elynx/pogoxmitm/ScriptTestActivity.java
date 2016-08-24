@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import de.robv.android.xposed.XposedBridge;
-
 public class ScriptTestActivity extends Activity {
 
     @Override
