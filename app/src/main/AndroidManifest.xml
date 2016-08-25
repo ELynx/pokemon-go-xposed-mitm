@@ -25,6 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:exported='false' android:name='org.ruboto.RubotoActivity'/>
+        <activity android:configChanges='orientation|screenSize' android:exported='false' android:name='org.ruboto.SplashActivity' android:noHistory='true'/>
+        <activity android:exported='false' android:name='org.ruboto.RubotoDialog' android:theme='@android:style/Theme.Dialog'/>
     </application>
 
 </manifest>

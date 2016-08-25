@@ -1,7 +1,6 @@
 package com.elynx.pogoxmitm;
 
-import org.jruby.embed.LocalContextScope;
-import org.jruby.embed.ScriptingContainer;
+import org.ruboto.JRubyAdapter;
 
 import java.nio.ByteBuffer;
 
@@ -12,9 +11,7 @@ import de.robv.android.xposed.XposedBridge;
  * Should be made reentrant and synchronized, since it is called from threads
  */
 public class MitmProvider {
-    // TODO make protected
-    public static final ScriptingContainer scriptingContainer = new ScriptingContainer(LocalContextScope.SINGLETON);
-
+    protected static final Long requestId = 0L;
     /**
      * Processes single package going from client to server
      * roData is created by allocate and had to have array
@@ -33,8 +30,9 @@ public class MitmProvider {
             //byte[] buffer = new byte[roData.remaining()];
             //roData.get(buffer);
 
-            synchronized (scriptingContainer) {
-                scriptingContainer.runScriptlet("puts 'Request'");
+            synchronized (requestId) {
+                // TODO set requestId from context
+                JRubyAdapter.runScriptlet("puts 'Request'");
             }
         } catch (Throwable e) {
             XposedBridge.log(e);
@@ -61,8 +59,9 @@ public class MitmProvider {
             //byte[] buffer = new byte[roData.remaining()];
             //roData.get(buffer);
 
-            synchronized (scriptingContainer) {
-                scriptingContainer.runScriptlet("puts 'Response'");
+            synchronized (requestId) {
+                // TODO verify request id
+                JRubyAdapter.runScriptlet("puts 'Response'");
             }
         } catch (Throwable e) {
             XposedBridge.log(e);

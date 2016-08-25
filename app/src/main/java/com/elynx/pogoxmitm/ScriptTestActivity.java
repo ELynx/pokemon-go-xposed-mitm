@@ -1,15 +1,16 @@
 package com.elynx.pogoxmitm;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class ScriptTestActivity extends Activity implements View.OnClickListener {
+import org.ruboto.JRubyAdapter;
+
+public class ScriptTestActivity extends org.ruboto.EntryPointActivity implements View.OnClickListener {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_script_test);
 
@@ -29,7 +30,7 @@ public class ScriptTestActivity extends Activity implements View.OnClickListener
         String runResult;
 
         try {
-            Object rc = MitmProvider.scriptingContainer.runScriptlet(scriptToRun);
+            Object rc = JRubyAdapter.runScriptlet(scriptToRun);
 
             if (rc == null)
                 runResult = "Null returned";
