@@ -1,5 +1,6 @@
 package com.elynx.pogoxmitm;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,7 +8,7 @@ import android.widget.EditText;
 
 import org.ruboto.JRubyAdapter;
 
-public class ScriptTestActivity extends org.ruboto.EntryPointActivity implements View.OnClickListener {
+public class ScriptTestActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -16,6 +17,8 @@ public class ScriptTestActivity extends org.ruboto.EntryPointActivity implements
 
         Button rubyButton = (Button) findViewById(R.id.rubyRun);
         rubyButton.setOnClickListener(this);
+
+        JRubyAdapter.setUpJRuby(this);
     }
 
     @Override
