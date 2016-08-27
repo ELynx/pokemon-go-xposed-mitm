@@ -30,15 +30,16 @@ public class ScriptTestActivity extends Activity implements View.OnClickListener
         EditText resultEdit = (EditText) findViewById(R.id.rubyResult);
 
         String scriptToRun = scriptEdit.getText().toString();
-        String runResult;
+        String runResult = "Nothingness\n";
 
         try {
+            runResult = "Trying run...\n";
             Object rc = JRubyAdapter.runScriptlet(scriptToRun);
 
             if (rc == null)
-                runResult = "Null returned";
+                runResult += "Null returned";
             else
-                runResult = rc.toString();
+                runResult += rc.toString();
         } catch (Throwable e) {
             String message = e.getMessage();
 
@@ -49,7 +50,11 @@ public class ScriptTestActivity extends Activity implements View.OnClickListener
 
             message += e.toString();
 
-            runResult = "Exception:\n" + message;
+            if (e.getCause() != null) {
+                message += "\nCaused by " + e.getCause().toString();
+            }
+
+            runResult += "Exception:\n" + message;
         }
 
         resultEdit.setText(runResult);
