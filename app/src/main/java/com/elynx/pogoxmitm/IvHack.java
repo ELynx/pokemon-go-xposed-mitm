@@ -1,36 +1,15 @@
 package com.elynx.pogoxmitm;
 
-import android.app.AndroidAppHelper;
-import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-import android.widget.Toast;
-
+import com.elynx.pogoxmitm.modules.DataExporter;
 import com.github.aeonlucid.pogoprotos.Data;
-import com.github.aeonlucid.pogoprotos.Enums;
 import com.github.aeonlucid.pogoprotos.Inventory;
-import com.github.aeonlucid.pogoprotos.data.Capture;
-import com.github.aeonlucid.pogoprotos.inventory.Item;
 import com.github.aeonlucid.pogoprotos.networking.Requests;
 import com.github.aeonlucid.pogoprotos.networking.Responses;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.Descriptors;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.UnknownFieldSet;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
-
-import de.robv.android.xposed.XposedBridge;
 
 /**
  * Class that shows IVs for pokemon in nickname
@@ -113,8 +92,7 @@ public class IvHack {
 
         if (inventoryResponseBuilder.hasInventoryDelta()) {
             boolean deltaChanged = false;
-            ArrayList<HashMap<String, String>> pokemonData = new ArrayList<HashMap<String, String>>();
-            HashMap<String, String> candyData = new HashMap<String, String>();
+            DataExporter dataExporter = new DataExporter();
 
             Inventory.InventoryDelta.Builder inventoryDeltaBuilder = inventoryResponseBuilder.getInventoryDelta().toBuilder();
 
@@ -124,11 +102,11 @@ public class IvHack {
                 if (invItemBuilder.hasInventoryItemData()) {
                     Inventory.InventoryItemData.Builder invItemDataBuilder = invItemBuilder.getInventoryItemData().toBuilder();
 
-                    if (Injector.doCsvHack) {
+                    if (Injector.doExportHack) {
                         if (invItemDataBuilder.hasCandy()) {
-                            String candies = invItemDataBuilder.getCandy().toBuilder().getCandy() + "";
-                            String family = invItemDataBuilder.getCandy().toBuilder().getFamilyIdValue() + "";
-                            candyData.put(family, candies);
+                            int candies = invItemDataBuilder.getCandy().toBuilder().getCandy();
+                            int family = invItemDataBuilder.getCandy().toBuilder().getFamilyIdValue();
+                            dataExporter.addCandyData(family, candies);
                         }
                     }
 
@@ -138,23 +116,7 @@ public class IvHack {
                         if (pokeBuilder.getIsEgg())
                             continue; // with another item
 
-                        int atk = pokeBuilder.getIndividualAttack();
-                        int def = pokeBuilder.getIndividualDefense();
-                        int sta = pokeBuilder.getIndividualStamina();
-                        int total = (atk + def + sta) * 100 / 45;
-
-                        if (Injector.doCsvHack) {
-                            HashMap<String, String> data = new HashMap<String, String>();
-                            data.put("id", pokeBuilder.getPokemonIdValue() + "");
-                            data.put("cp", pokeBuilder.getCp() + "");
-                            data.put("family", "");
-                            data.put("candies", "");
-                            data.put("favourite", pokeBuilder.getFavorite() + "");
-                            data.put("iv", total + "");
-                            data.put("move1", pokeBuilder.getMove1().name() + "");
-                            data.put("move2", pokeBuilder.getMove2().name() + "");
-                            pokemonData.add(data);
-                        }
+                        dataExporter.addPokemonData(pokeBuilder);
 
                         pokeBuilder = makeIvNickname(pokeBuilder);
 
@@ -168,14 +130,7 @@ public class IvHack {
             } //end of delta->items
 
             if (deltaChanged) {
-
-                if (Injector.doCsvHack) {
-                    try {
-                        exportPokemonData(pokemonData, candyData);
-                    } catch (Exception ex) {
-                        XposedBridge.log("[ERROR] " + ex.getMessage());
-                    }
-                }
+                dataExporter.run();
 
                 inventoryResponseBuilder.setInventoryDelta(inventoryDeltaBuilder.build());
                 return inventoryResponseBuilder.build().toByteString();
@@ -183,87 +138,6 @@ public class IvHack {
         } // end of delta
 
         return null;
-    }
-
-    protected static String getFamilyId(String id) {
-        int pokeId = Integer.parseInt(id);
-        int familyId = 0;
-
-        // fix for incorrect hypno family
-        if (pokeId == Enums.PokemonId.HYPNO_VALUE) {
-            return Enums.PokemonFamilyId.FAMILY_DROWZEE_VALUE + "";
-        }
-
-        // this might be stupid but it works
-        if (Enums.PokemonFamilyId.valueOf(pokeId) != null) {
-            familyId = Enums.PokemonFamilyId.valueOf(pokeId).getNumber();
-        } else if (Enums.PokemonFamilyId.valueOf(pokeId - 1) != null) {
-            familyId = Enums.PokemonFamilyId.valueOf(pokeId - 1).getNumber();
-        } else if (Enums.PokemonFamilyId.valueOf(pokeId - 2) != null) {
-            familyId = Enums.PokemonFamilyId.valueOf(pokeId - 2).getNumber();
-        }
-        return familyId + "";
-    }
-
-    protected static void exportPokemonData(ArrayList<HashMap<String, String>> pokemonData, HashMap<String, String> candyData) throws Exception {
-        if (!Injector.doCsvHack || pokemonData.size() < 2) {
-            return;
-        }
-
-        Collections.sort(pokemonData, new Comparator<HashMap<String, String>>() {
-            @Override
-            public int compare(HashMap<String, String> map1, HashMap<String, String> map2) {
-                return Double.compare(Integer.parseInt(map1.get("id")), Integer.parseInt(map2.get("id")));
-            }
-        });
-
-        for (HashMap<String, String> map : pokemonData) {
-            String family = getFamilyId(map.get("id"));
-            String candies = candyData.get(family);
-            //XposedBridge.log("[family] : " + map.get("id") + " - " + family + " [candies] : " + candies);
-            map.put("candies", candies);
-            map.put("family", family);
-        }
-
-        String baseDir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-        String fileName = "PokemonData.csv";
-        File folder = new File(baseDir + File.separator + "Pokemon");
-        File file = new File(folder.getAbsolutePath() + File.separator + fileName);
-
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        if (file.exists()) {
-            file.delete();
-        }
-
-        file.createNewFile();
-        file.setWritable(true);
-
-        FileWriter outputStream = new FileWriter(file);
-        PrintWriter out = new PrintWriter(outputStream);
-
-        out.println("ID,Family,Candy,Favourite,CP,IV,Move1,Move2");
-
-        for (HashMap<String, String> map : pokemonData) {
-            String text = map.get("id") + "," + map.get("family") + "," + map.get("candies") + "," + map.get("favourite") + "," + map.get("cp") +
-                    "," + map.get("iv") + "," + map.get("move1") + "," + map.get("move2");
-
-            out.println(text);
-        }
-
-        out.flush();
-        out.close();
-        outputStream.close();
-
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(AndroidAppHelper.currentApplication().getBaseContext(), "Pokemon.csv saved!", Toast.LENGTH_SHORT).show();
-
-                XposedBridge.log("### [PoGo-MITM] Pokemon.csv saved!");
-            }
-        });
     }
 
     protected static Data.PokemonData.Builder makeIvNickname(Data.PokemonData.Builder pokeBuilder) {

@@ -23,7 +23,7 @@ public class Injector implements IXposedHookLoadPackage {
 
     public static boolean doIvHack = false;
     public static boolean doFortHack = false;
-    public static boolean doCsvHack = false;
+    public static boolean doExportHack = false;
 
     protected static String[] Methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE"};
 
@@ -42,9 +42,9 @@ public class Injector implements IXposedHookLoadPackage {
 
         doIvHack = prefs.getBoolean("pref_iv", false);
         doFortHack = prefs.getBoolean("pref_fort", false);
-        doCsvHack = prefs.getBoolean("pref_csv", false);
+        doExportHack = prefs.getBoolean("pref_csv", false);
 
-        if (!doIvHack && !doFortHack && !doCsvHack)
+        if (!doIvHack && !doFortHack && !doExportHack)
             return;
 
         String NiaNetName = "com.nianticlabs.nia.network.NiaNet";
