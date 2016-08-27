@@ -31,7 +31,7 @@ public class MitmProvider {
      * @param roData Read-only buffer to be processed
      * @return ByteBuffer with new content if data was changed, null otherwise
      */
-    public static ByteBuffer processOutboundPackage(ByteBuffer roData) {
+    public static ByteBuffer processOutboundPackage(ByteBuffer roData, int exchangeId, boolean connectionOk) {
         roData.rewind();
 
         if (BuildConfig.DEBUG) {
@@ -66,7 +66,7 @@ public class MitmProvider {
      * @param roData Read-only buffer to be processed
      * @return ByteBuffer with new content if data was changed, null otherwise
      */
-    public static ByteBuffer processInboundPackage(ByteBuffer roData) {
+    public static ByteBuffer processInboundPackage(ByteBuffer roData, int exchangeId, boolean connectionOk) {
         roData.rewind();
 
         if (BuildConfig.DEBUG) {

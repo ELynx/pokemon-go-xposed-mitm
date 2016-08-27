@@ -7,15 +7,23 @@ import java.nio.ByteBuffer;
 
 /**
  * Implements input stream that asks MITM provider before giving data away
- * <p/>
+ * <p>
  * Based on answer on StackOverflow
  * https://stackoverflow.com/questions/4332264/wrapping-a-bytebuffer-with-an-inputstream/6603018#6603018
  */
 public class MitmInputStream extends InputStream {
     ByteBuffer buffer;
+    int responseId = 0;
+
     boolean mitmDone = false;
 
-    public MitmInputStream(InputStream target) {
+    public MitmInputStream(InputStream target, int responseId) {
+        this.responseId = responseId;
+
+        if (target == null) {
+            return;
+        }
+
         // read all data from target into buffer
         // from http://www.gregbugaj.com/?p=283
 
@@ -80,7 +88,8 @@ public class MitmInputStream extends InputStream {
             return;
 
         // null if original is fine, otherwise contains new data
-        ByteBuffer fromMitm = MitmProvider.processInboundPackage(buffer.asReadOnlyBuffer());
+        boolean connectionOk = buffer.hasRemaining();
+        ByteBuffer fromMitm = MitmProvider.processInboundPackage(buffer.asReadOnlyBuffer(), responseId, connectionOk);
 
         if (fromMitm != null) {
             buffer = fromMitm;

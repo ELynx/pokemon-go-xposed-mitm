@@ -9,18 +9,23 @@ import java.nio.ByteBuffer;
  * Implements output stream that asks MITM provider before writing
  */
 public class MitmOutputStream extends ByteArrayOutputStream {
-    OutputStream target;
+    OutputStream target = null;
+    int requestId = 0;
 
-    public MitmOutputStream(OutputStream target) {
+    public MitmOutputStream(OutputStream target, int requestId) {
         super(2048); // average request is around 1500 bytes
-        this.target = target;
+        this.target = target; // can become null if connection is lost
+        this.requestId = requestId;
     }
 
     @Override
     public void close() throws IOException {
         doMitmOnStoredData();
         sendStoredData();
-        target.close();
+
+        if (target != null) {
+            target.close();
+        }
 
         super.close();
     }
@@ -29,15 +34,19 @@ public class MitmOutputStream extends ByteArrayOutputStream {
     public void flush() throws IOException {
         doMitmOnStoredData();
         sendStoredData();
-        target.flush();
+
+        if (target != null) {
+            target.flush();
+        }
     }
 
     protected void doMitmOnStoredData() {
         // wrapper that will go to mitm class
         ByteBuffer wrapped = ByteBuffer.wrap(buf, 0, count).asReadOnlyBuffer();
+        boolean connectionOk = target != null;
 
         // null if original is fine, otherwise contains new data
-        ByteBuffer fromMitm = MitmProvider.processOutboundPackage(wrapped);
+        ByteBuffer fromMitm = MitmProvider.processOutboundPackage(wrapped, requestId, connectionOk);
 
         if (fromMitm != null) {
             reset();
@@ -47,7 +56,10 @@ public class MitmOutputStream extends ByteArrayOutputStream {
     }
 
     protected void sendStoredData() throws IOException {
-        writeTo(target);
+        if (target != null) {
+            writeTo(target);
+        }
+
         reset();
     }
 }
