@@ -119,7 +119,7 @@ public class Injector implements IXposedHookLoadPackage {
 
                         XposedBridge.log("[request] " + context.shortDump());
 
-                        MitmOutputStream replacement = new MitmOutputStream((OutputStream) param.getResult());
+                        MitmOutputStream replacement = new MitmOutputStream((OutputStream) param.getResult(), context.requestId);
                         param.setResult(replacement);
 
                         if (BuildConfig.DEBUG) {
@@ -141,7 +141,7 @@ public class Injector implements IXposedHookLoadPackage {
 
                         XposedBridge.log("[response] " + context.shortDump());
 
-                        MitmInputStream replacement = new MitmInputStream((InputStream) param.getResult());
+                        MitmInputStream replacement = new MitmInputStream((InputStream) param.getResult(), context.requestId);
                         param.setResult(replacement);
 
                         if (BuildConfig.DEBUG) {

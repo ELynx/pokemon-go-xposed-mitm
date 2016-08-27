@@ -1,7 +1,5 @@
 package com.elynx.pogoxmitm;
 
-import org.ruboto.JRubyAdapter;
-
 import java.nio.ByteBuffer;
 
 import de.robv.android.xposed.XposedBridge;
@@ -11,7 +9,8 @@ import de.robv.android.xposed.XposedBridge;
  * Should be made reentrant and synchronized, since it is called from threads
  */
 public class MitmProvider {
-    protected static final Long requestId = 0L;
+    protected static final Boolean sync = false;
+
     /**
      * Processes single package going from client to server
      * roData is created by allocate and had to have array
@@ -19,7 +18,7 @@ public class MitmProvider {
      * @param roData Read-only buffer to be processed
      * @return ByteBuffer with new content if data was changed, null otherwise
      */
-    public static ByteBuffer processOutboundPackage(ByteBuffer roData) {
+    public static ByteBuffer processOutboundPackage(ByteBuffer roData, int exchangeId, boolean connectionOk) {
         roData.rewind();
 
         if (BuildConfig.DEBUG) {
@@ -30,9 +29,11 @@ public class MitmProvider {
             //byte[] buffer = new byte[roData.remaining()];
             //roData.get(buffer);
 
-            synchronized (requestId) {
-                // TODO set requestId from context
-                JRubyAdapter.runScriptlet("puts 'Request'");
+            synchronized (sync) {
+                // use all of this
+                // buffer;
+                // exchangeId;
+                // connectionOk;
             }
         } catch (Throwable e) {
             XposedBridge.log(e);
@@ -48,7 +49,7 @@ public class MitmProvider {
      * @param roData Read-only buffer to be processed
      * @return ByteBuffer with new content if data was changed, null otherwise
      */
-    public static ByteBuffer processInboundPackage(ByteBuffer roData) {
+    public static ByteBuffer processInboundPackage(ByteBuffer roData, int exchangeId, boolean connectionOk) {
         roData.rewind();
 
         if (BuildConfig.DEBUG) {
@@ -59,9 +60,11 @@ public class MitmProvider {
             //byte[] buffer = new byte[roData.remaining()];
             //roData.get(buffer);
 
-            synchronized (requestId) {
-                // TODO verify request id
-                JRubyAdapter.runScriptlet("puts 'Response'");
+            synchronized (sync) {
+                // use all of this
+                // buffer
+                // exchangeId
+                // connectionOk
             }
         } catch (Throwable e) {
             XposedBridge.log(e);
