@@ -1,12 +1,15 @@
 package com.elynx.pogoxmitm;
 
+import com.elynx.pogoxmitm.modules.DataExporter;
 import com.github.aeonlucid.pogoprotos.Data;
 import com.github.aeonlucid.pogoprotos.Inventory;
-import com.github.aeonlucid.pogoprotos.inventory.Item;
 import com.github.aeonlucid.pogoprotos.networking.Requests;
 import com.github.aeonlucid.pogoprotos.networking.Responses;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Class that shows IVs for pokemon in nickname
@@ -89,6 +92,8 @@ public class IvHack {
 
         if (inventoryResponseBuilder.hasInventoryDelta()) {
             boolean deltaChanged = false;
+            DataExporter dataExporter = new DataExporter();
+
             Inventory.InventoryDelta.Builder inventoryDeltaBuilder = inventoryResponseBuilder.getInventoryDelta().toBuilder();
 
             for (int invItemNo = 0; invItemNo < inventoryDeltaBuilder.getInventoryItemsCount(); ++invItemNo) {
@@ -97,11 +102,21 @@ public class IvHack {
                 if (invItemBuilder.hasInventoryItemData()) {
                     Inventory.InventoryItemData.Builder invItemDataBuilder = invItemBuilder.getInventoryItemData().toBuilder();
 
+                    if (Injector.doExportHack) {
+                        if (invItemDataBuilder.hasCandy()) {
+                            int candies = invItemDataBuilder.getCandy().toBuilder().getCandy();
+                            int family = invItemDataBuilder.getCandy().toBuilder().getFamilyIdValue();
+                            dataExporter.addCandyData(family, candies);
+                        }
+                    }
+
                     if (invItemDataBuilder.hasPokemonData()) {
                         Data.PokemonData.Builder pokeBuilder = invItemDataBuilder.getPokemonData().toBuilder();
 
                         if (pokeBuilder.getIsEgg())
                             continue; // with another item
+
+                        dataExporter.addPokemonData(pokeBuilder);
 
                         pokeBuilder = makeIvNickname(pokeBuilder);
 
@@ -115,6 +130,8 @@ public class IvHack {
             } //end of delta->items
 
             if (deltaChanged) {
+                dataExporter.run();
+
                 inventoryResponseBuilder.setInventoryDelta(inventoryDeltaBuilder.build());
                 return inventoryResponseBuilder.build().toByteString();
             }
