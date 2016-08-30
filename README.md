@@ -19,7 +19,9 @@ Intercept packages going from client to server; all without breaking actual comm
 
 Intercept packages going from server to client, too.
 
-Export pokemon data including IV's and attacks to csv located in external storage at `Pokemon/PokemonData.csv`. It is done each time the application starts. You can see toast message during loading screen.
+Export pokemon data including IV's and attacks to tsv file located in external storage at `Pokemon/PokemonData.tsv`.
+It is done each time the application starts. You can see toast message with confirmation during loading screen.
+The data can be later used for calculations. For ex. like in the [Pokemon Evolution Calculator](https://docs.google.com/spreadsheets/d/1vlEsToajcid9KTkLzgqZCpji8bDVEpMM6GQ8SqNL4-k/edit?usp=sharing)
 
 ###Branch right-now, as released on XPosed repo
 Simple hack to put IVs into pokemon nickname.
