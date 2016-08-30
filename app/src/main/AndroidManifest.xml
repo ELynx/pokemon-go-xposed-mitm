@@ -13,7 +13,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Pokemon Go (c) MITM right iside application" />
+            android:value="Pokemon Go (c) MITM right inside application" />
         <meta-data
             android:name="xposedminversion"
             android:value="53" />
