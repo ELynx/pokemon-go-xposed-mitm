@@ -33,6 +33,9 @@ public class DataExporter extends ModuleBase {
         pokemon.setMoveCharge(pokemonBuilder.getMove2().name());
         pokemon.setFavourite(pokemonBuilder.getFavorite() == 1);
         pokemon.setCandies(0);
+        pokemon.setFromEgg(pokemonBuilder.getFromFort() == 1);
+        pokemon.setNumUpgrades(pokemonBuilder.getNumUpgrades());
+
         pokemonData.add(pokemon);
     }
 
@@ -55,7 +58,7 @@ public class DataExporter extends ModuleBase {
             return;
         }
 
-        exportCsv(this.pokemonData);
+        exportTsv(this.pokemonData);
     }
 
     protected void prepareData() {
@@ -70,10 +73,11 @@ public class DataExporter extends ModuleBase {
         String[] columns = {
                 "ID", "Family", "Candies", "Favourite",
                 "CP", "IV", "Attack", "Defence",
-                "Stamina", "Move Quick", "Move Charge"
+                "Stamina", "Move Quick", "Move Charge",
+                "From egg", "Number of upgrades"
         };
 
-        return TextUtils.join(",", columns);
+        return TextUtils.join("\t", columns);
     }
 
     protected String getPokemonDataString(PokemonExportData pokemon) {
@@ -81,14 +85,15 @@ public class DataExporter extends ModuleBase {
                 pokemon.getId() + "", pokemon.getFamily() + "", pokemon.getCandies() + "",
                 pokemon.isFavourite() ? "1" : "0", pokemon.getCp() + "", pokemon.getIv() + "",
                 pokemon.getAttack() + "", pokemon.getDefence() + "", pokemon.getStamina() + "",
-                pokemon.getMoveQuick(), pokemon.getMoveCharge()
+                pokemon.getMoveQuick(), pokemon.getMoveCharge(), pokemon.isFromEgg() ? "1" : "0",
+                pokemon.getNumUpgrades() + ""
         };
-        return TextUtils.join(",", data);
+        return TextUtils.join("\t", data);
     }
 
-    protected void exportCsv(ArrayList<PokemonExportData> pokemonData) {
+    protected void exportTsv(ArrayList<PokemonExportData> pokemonData) {
         String baseDir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-        String fileName = "PokemonData.csv";
+        String fileName = "PokemonData.tsv";
         File folder = new File(baseDir + File.separator + "Pokemon");
         File file = new File(folder.getAbsolutePath() + File.separator + fileName);
 
@@ -119,9 +124,9 @@ public class DataExporter extends ModuleBase {
             outputStream.close();
         } catch (IOException ex) {
             log("[ERROR] " + ex.getMessage());
-            showToast("Error when saving CSV!");
+            showToast("Error when saving TSV!");
         }
 
-        showToast("Pokemon.csv saved!");
+        showToast(fileName + " saved!");
     }
 }

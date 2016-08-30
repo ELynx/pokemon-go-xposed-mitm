@@ -12,8 +12,8 @@
         android:title="@string/pref_fort"
         android:summary="@string/pref_fort_sum" />
     <CheckBoxPreference
-        android:key="pref_csv"
+        android:key="pref_tsv"
         android:defaultValue="false"
-        android:title="@string/pref_csv"
-        android:summary="@string/pref_csv_sum" />
+        android:title="@string/pref_tsv"
+        android:summary="@string/pref_tsv_sum" />
 </PreferenceScreen>
