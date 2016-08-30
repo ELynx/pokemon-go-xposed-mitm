@@ -15,7 +15,7 @@ public abstract class ModuleBase {
             public void run() {
                 Toast.makeText(AndroidAppHelper.currentApplication().getBaseContext(), toastText, Toast.LENGTH_SHORT).show();
 
-                log("Pokemon.csv saved!");
+                log(toastText);
             }
         });
     }

@@ -42,7 +42,7 @@ public class Injector implements IXposedHookLoadPackage {
 
         doIvHack = prefs.getBoolean("pref_iv", false);
         doFortHack = prefs.getBoolean("pref_fort", false);
-        doExportHack = prefs.getBoolean("pref_csv", false);
+        doExportHack = prefs.getBoolean("pref_tsv", false);
 
         if (!doIvHack && !doFortHack && !doExportHack)
             return;

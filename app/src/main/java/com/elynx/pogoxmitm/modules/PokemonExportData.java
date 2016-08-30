@@ -13,6 +13,24 @@ class PokemonExportData implements Comparable<PokemonExportData> {
     private int Stamina;
     private String MoveQuick;
     private String MoveCharge;
+    private boolean FromEgg;
+    private int NumUpgrades;
+
+    public int getNumUpgrades() {
+        return NumUpgrades;
+    }
+
+    public void setNumUpgrades(int numUpgrades) {
+        NumUpgrades = numUpgrades;
+    }
+
+    public boolean isFromEgg() {
+        return FromEgg;
+    }
+
+    public void setFromEgg(boolean fromEgg) {
+        FromEgg = fromEgg;
+    }
 
     public int getAttack() {
         return Attack;
