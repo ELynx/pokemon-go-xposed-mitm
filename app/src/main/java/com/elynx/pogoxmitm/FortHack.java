@@ -80,8 +80,6 @@ public class FortHack {
             long delta = expires - now;
 
             if (delta > 0) {
-                // add player info - tmi
-                //String moreInfo = "Lure by " + mod.getDeployerPlayerCodename() + "\n";
                 String moreInfo = "";
 
                 // add expiration time
@@ -102,11 +100,8 @@ public class FortHack {
                         moreInfo += Long.toString(seconds) + "s";
                     }
                 }
-                
-                moreInfo += " left";
 
-                // retain original description - tmi
-                // moreInfo += "\n" + builder.getDescription();
+                moreInfo += " left";
 
                 builder.setDescription(moreInfo);
 

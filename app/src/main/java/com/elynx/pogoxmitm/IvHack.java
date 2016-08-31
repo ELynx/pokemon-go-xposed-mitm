@@ -3,13 +3,13 @@ package com.elynx.pogoxmitm;
 import com.elynx.pogoxmitm.modules.DataExporter;
 import com.github.aeonlucid.pogoprotos.Data;
 import com.github.aeonlucid.pogoprotos.Inventory;
+import com.github.aeonlucid.pogoprotos.inventory.Item;
 import com.github.aeonlucid.pogoprotos.networking.Requests;
 import com.github.aeonlucid.pogoprotos.networking.Responses;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import de.robv.android.xposed.XposedBridge;
 
 /**
  * Class that shows IVs for pokemon in nickname
@@ -141,43 +141,38 @@ public class IvHack {
     }
 
     protected static Data.PokemonData.Builder makeIvNickname(Data.PokemonData.Builder pokeBuilder) {
+        final String circles = "⓪①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳";
+
         int atk = pokeBuilder.getIndividualAttack();
         int def = pokeBuilder.getIndividualDefense();
         int sta = pokeBuilder.getIndividualStamina();
 
         int total = (atk + def + sta) * 100 / 45;
 
-        /*Item.ItemId ballId = pokeBuilder.getPokeball();
+        float level = pokeBuilder.getNumUpgrades() / 2.0f;
+
+        Item.ItemId ballId = pokeBuilder.getPokeball();
         String ballStr = "";
 
-        switch (ballId)
-        {
+        switch (ballId) {
             case ITEM_GREAT_BALL:
-                ballStr += " G";
+                ballStr += "Ⓖ";
                 break;
 
             case ITEM_MASTER_BALL:
-                ballStr += " M";
+                ballStr += "Ⓜ";
                 break;
 
             case ITEM_POKE_BALL:
-                //ballStr += " P";
+                ballStr += "Ⓟ";
                 break;
 
             case ITEM_ULTRA_BALL:
-                ballStr += " U";
+                ballStr += "Ⓤ";
                 break;
         }
 
-        int battlesAttacked = pokeBuilder.getBattlesAttacked();
-        int battlesDefended = pokeBuilder.getBattlesDefended();
-        String battleString = "";
-
-        if (battlesAttacked > 0)
-            battleString += " a" + Integer.toString(battlesAttacked);
-
-        if (battlesDefended > 0)
-            battleString += " d" + Integer.toString(battlesDefended);*/
+        String gymString = pokeBuilder.getDeployedFortId();
 
         // For A-Z sorting to see best ones at glance
         String prefix;
@@ -203,12 +198,23 @@ public class IvHack {
             prefix = "J";
 
         String nickname = prefix + " " +
-                Integer.toString(total) + "%" +
-                " A" + Integer.toString(atk) +
-                " D" + Integer.toString(def) +
-                " S" + Integer.toString(sta);/* +
-                battleString +
-                ballStr;*/
+                Integer.toString(total) + " " +
+                circles.charAt(atk) +
+                circles.charAt(def) +
+                circles.charAt(sta);
+
+        if (gymString.isEmpty()) {
+            nickname += " " + ballStr + Float.toString(level);
+        } else {
+            nickname += gymString;
+        }
+
+        int length = Math.min(nickname.length(), 15);
+        nickname = nickname.substring(length);
+
+        if (BuildConfig.DEBUG) {
+            XposedBridge.log(nickname);
+        }
 
         pokeBuilder.setNickname(nickname);
 
