@@ -1,5 +1,4 @@
 #Pokemon GO (c) direct Man-in-the-Middle
-![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.33.0-blue.svg?style=flat-square")
 ![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.35.0-blue.svg?style=flat-square")
 ![license](https://img.shields.io/github/license/ELynx/pokemon-go-xposed-mitm.svg)
 
@@ -7,7 +6,7 @@ Consider module field-tested with 0.35.0.
 ##Pre-build version
 You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm).
 
-If with version 1.2 Stable example hacks are not activated, try version 1.0 Beta. Make sure to turn on Beta modules visibility to see it.
+If with version 1.2 Stable example hacks are not activated, try version 1.3 Beta. Make sure to turn on Beta modules visibility to see it.
 
 ##Brief
 Uses XPosed framework to intercept web communications of app and modify out- and inbound packages.
@@ -38,3 +37,4 @@ Code for XPosed repo release is in branch right-now.
 * [POGOProtos](https://github.com/AeonLucid/POGOProtos) by [Mike](https://github.com/AeonLucid)
 * [Launcher icon generator](https://romannurik.github.io/AndroidAssetStudio/index.html) by [Roman Nurik](https://github.com/romannurik)
 * [Pokeball icon set](http://tamarinfrog.deviantart.com/art/All-Poke-Balls-Free-Icons-368996730) by [TamarinFrog](http://tamarinfrog.deviantart.com/)
+* [Xposed module for Jodel](https://github.com/krokofant/JodelXposed) by [https://github.com/krokofant](https://github.com/krokofant/JodelXposed)
