@@ -7,6 +7,8 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 
+import de.robv.android.xposed.XposedBridge;
+
 /**
  * Whole settings scheme is taken from https://github.com/krokofant/JodelXposed
  * Big thanks to authors for advice and code alike
@@ -17,20 +19,9 @@ public class MainActivity extends PreferenceActivity implements Preference.OnPre
     protected CheckBoxPreference fortHackPreference;
     protected CheckBoxPreference exportHackPreference;
 
-    protected Options options;
-
-    protected BooleanOption ivHack;
-    protected BooleanOption fortHack;
-    protected BooleanOption exportHack;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        options = Options.getInstance();
-        ivHack = Options.getInstance().getIvHack();
-        fortHack = Options.getInstance().getFortHack();
-        exportHack = Options.getInstance().getExportHack();
 
         addPreferencesFromResource(R.xml.preferences);
 
@@ -51,9 +42,9 @@ public class MainActivity extends PreferenceActivity implements Preference.OnPre
     }
 
     protected void updateFieldsFromSettings() {
-        ivHackPreference.setChecked(ivHack.isActive());
-        fortHackPreference.setChecked(fortHack.isActive());
-        exportHackPreference.setChecked(exportHack.isActive());
+        ivHackPreference.setChecked(Options.getInstance().getIvHack().isActive());
+        fortHackPreference.setChecked(Options.getInstance().getFortHack().isActive());
+        exportHackPreference.setChecked(Options.getInstance().getExportHack().isActive());
     }
 
     @Override
@@ -73,29 +64,30 @@ public class MainActivity extends PreferenceActivity implements Preference.OnPre
 
         if (obj instanceof Boolean) {
             value = (Boolean) obj;
+            android.util.Log.i("[PoGo MITM]", preference.getKey() + " " + obj.toString());
         }
 
         boolean doSave = false;
 
         switch (preference.getKey()) {
             case "pref_iv":
-                ivHack.setActive(value);
+                Options.getInstance().getIvHack().setActive(value);
                 doSave = true;
                 break;
             case "pref_fort":
-                fortHack.setActive(value);
+                Options.getInstance().getFortHack().setActive(value);
                 doSave = true;
                 break;
             case "pref_export":
-                exportHack.setActive(value);
+                Options.getInstance().getExportHack().setActive(value);
                 doSave = true;
                 break;
         }
 
         if (doSave) {
-            options.save();
+            Options.getInstance().save();
         }
 
-        return true;
+        return doSave;
     }
 }
