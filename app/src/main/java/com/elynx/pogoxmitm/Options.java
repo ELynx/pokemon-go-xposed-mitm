@@ -13,8 +13,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import de.robv.android.xposed.XposedBridge;
-
 public class Options extends FileObserver {
     public static String SettingsPath = Environment.getExternalStorageDirectory() + "/Pokemon/.pogoxmitm-settings";
 
@@ -52,7 +50,7 @@ public class Options extends FileObserver {
         super(SettingsPath, CLOSE_WRITE);
         Moshi moshi = new Moshi.Builder().build();
         jsonAdapter = moshi.adapter(OptionsObject.class);
-        XposedBridge.log("[PoGo MITM] Init file object with path: " + SettingsPath);
+        android.util.Log.i("[PoGo MITM]", "Init file object with path: " + SettingsPath);
         settingsFile = new File(SettingsPath);
 
         if (!settingsFile.exists()) {
@@ -67,13 +65,13 @@ public class Options extends FileObserver {
     private void writeFile() {
         String settingsJson = jsonAdapter.toJson(options);
         try {
-            XposedBridge.log(String.format("[PoGo MITM] Writing %s to file", settingsJson));
+            android.util.Log.i("[PoGo MITM]", "Writing %s to file " + settingsJson);
             FileOutputStream output = FileUtils.openOutputStream(settingsFile);
             output.write(settingsJson.getBytes());
             output.close();
         } catch (IOException e) {
-            XposedBridge.log("[PoGo MITM] ERROR Could not write to file");
-            XposedBridge.log(e);
+            android.util.Log.i("[PoGo MITM]", "ERROR Could not write to file");
+            android.util.Log.i("[PoGo MITM]", e.toString());
         }
     }
 
@@ -82,19 +80,19 @@ public class Options extends FileObserver {
     }
 
     public void load() {
-        XposedBridge.log("[PoGo MITM] Loading settings file");
+        android.util.Log.i("[PoGo MITM]", "Loading settings file");
         try {
             String json = FileUtils.readFileToString(settingsFile, Charsets.UTF_8);
             options = jsonAdapter.fromJson(json);
 
-            XposedBridge.log("[PoGo MITM] Settings"
+            android.util.Log.i("[PoGo MITM]", "Settings"
                     + "\nIvHack " + options.ivHack.toString()
                     + "\nFortHack " + options.fortHack.toString()
                     + "\nExportHack " + options.exportHack.toString()
             );
 
         } catch (IOException e) {
-            XposedBridge.log(e);
+            android.util.Log.i("[PoGo MITM]", e.toString());
         }
     }
 

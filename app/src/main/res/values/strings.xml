@@ -5,5 +5,5 @@
     <string name="pref_fort">Show lure time</string>
     <string name="pref_fort_sum">Show remaining time of a lure module in pokestop description</string>
     <string name="pref_export">Export pokemon data to storage</string>
-    <string name="pref_export_sum">During start save pokemon info for analysis. See module description for link to spreadsheet.</string>
+    <string name="pref_export_sum">During PoGo load export pokemon/candy info for analysis\nSee module description for link to spreadsheet</string>
 </resources>

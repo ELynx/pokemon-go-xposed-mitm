@@ -2,9 +2,9 @@ package com.elynx.pogoxmitm;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.SwitchPreference;
 import android.view.MenuItem;
 
 /**
@@ -13,9 +13,9 @@ import android.view.MenuItem;
  */
 
 public class MainActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
-    protected SwitchPreference ivHackPreference;
-    protected SwitchPreference fortHackPreference;
-    protected SwitchPreference exportHackPreference;
+    protected CheckBoxPreference ivHackPreference;
+    protected CheckBoxPreference fortHackPreference;
+    protected CheckBoxPreference exportHackPreference;
 
     protected Options options;
 
@@ -34,9 +34,9 @@ public class MainActivity extends PreferenceActivity implements Preference.OnPre
 
         addPreferencesFromResource(R.xml.preferences);
 
-        ivHackPreference = (SwitchPreference) findPreference("pref_iv");
-        fortHackPreference = (SwitchPreference) findPreference("pref_fort");
-        exportHackPreference = (SwitchPreference) findPreference("pref_export");
+        ivHackPreference = (CheckBoxPreference) findPreference("pref_iv");
+        fortHackPreference = (CheckBoxPreference) findPreference("pref_fort");
+        exportHackPreference = (CheckBoxPreference) findPreference("pref_export");
 
         ivHackPreference.setOnPreferenceChangeListener(this);
         fortHackPreference.setOnPreferenceChangeListener(this);
