@@ -25,20 +25,20 @@ public class Options extends FileObserver {
     }
 
     public static class OptionsObject {
-        public Boolean ivHack = new Boolean(true);
-        public Boolean fortHack = new Boolean(false);
-        public Boolean exportHack = new Boolean(false);
+        public BooleanOption ivHack = new BooleanOption(true);
+        public BooleanOption fortHack = new BooleanOption(false);
+        public BooleanOption exportHack = new BooleanOption(false);
     }
 
-    public Boolean getIvHack() {
+    public BooleanOption getIvHack() {
         return this.options.ivHack;
     }
 
-    public Boolean getFortHack() {
+    public BooleanOption getFortHack() {
         return this.options.fortHack;
     }
 
-    public Boolean getExportHack() {
+    public BooleanOption getExportHack() {
         return this.options.exportHack;
     }
 

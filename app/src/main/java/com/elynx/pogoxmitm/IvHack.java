@@ -102,7 +102,7 @@ public class IvHack {
                 if (invItemBuilder.hasInventoryItemData()) {
                     Inventory.InventoryItemData.Builder invItemDataBuilder = invItemBuilder.getInventoryItemData().toBuilder();
 
-                    if (Options.getInstance().getExportHack()) {
+                    if (Options.getInstance().getExportHack().isActive()) {
                         if (invItemDataBuilder.hasCandy()) {
                             int candies = invItemDataBuilder.getCandy().toBuilder().getCandy();
                             int family = invItemDataBuilder.getCandy().toBuilder().getFamilyIdValue();
@@ -119,7 +119,7 @@ public class IvHack {
                         }
                     }
 
-                    if (Options.getInstance().getIvHack()) {
+                    if (Options.getInstance().getIvHack().isActive()) {
                         if (invItemDataBuilder.hasPokemonData()) {
                             Data.PokemonData.Builder pokeBuilder = invItemDataBuilder.getPokemonData().toBuilder();
 
@@ -331,7 +331,7 @@ public class IvHack {
                 circles.charAt(sta);
 
         //if (gymString.isEmpty()) {
-            nickname += " " + Float.toString(levelNow);// + " "  + ballStr;
+        nickname += " " + Float.toString(levelNow);// + " "  + ballStr;
         //} else {
         //    nickname += " " + gymString;
         //}

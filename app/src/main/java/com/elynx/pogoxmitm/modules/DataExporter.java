@@ -66,9 +66,7 @@ public class DataExporter extends ModuleBase {
 
             if (candyData.containsKey(family)) {
                 pokemon.setCandies(candyData.get(family));
-            }
-            else
-            {
+            } else {
                 pokemon.setCandies(0); // :'(
             }
         }

@@ -19,9 +19,9 @@ public class MainActivity extends PreferenceActivity implements Preference.OnPre
 
     protected Options options;
 
-    protected Boolean ivHack;
-    protected Boolean fortHack;
-    protected Boolean exportHack;
+    protected BooleanOption ivHack;
+    protected BooleanOption fortHack;
+    protected BooleanOption exportHack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +51,9 @@ public class MainActivity extends PreferenceActivity implements Preference.OnPre
     }
 
     protected void updateFieldsFromSettings() {
-        ivHackPreference.setChecked(ivHack);
-        fortHackPreference.setChecked(fortHack);
-        exportHackPreference.setChecked(exportHack);
+        ivHackPreference.setChecked(ivHack.isActive());
+        fortHackPreference.setChecked(fortHack.isActive());
+        exportHackPreference.setChecked(exportHack.isActive());
     }
 
     @Override
@@ -74,15 +74,15 @@ public class MainActivity extends PreferenceActivity implements Preference.OnPre
 
         switch (preference.getKey()) {
             case "pref_iv":
-                ivHack = value;
+                ivHack.setActive(value);
                 doSave = true;
                 break;
             case "pref_fort":
-                fortHack = value;
+                fortHack.setActive(value);
                 doSave = true;
                 break;
             case "pref_export":
-                exportHack = value;
+                exportHack.setActive(value);
                 doSave = true;
                 break;
         }
