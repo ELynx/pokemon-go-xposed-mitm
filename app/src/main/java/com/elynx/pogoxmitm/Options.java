@@ -65,7 +65,7 @@ public class Options extends FileObserver {
     private void writeFile() {
         String settingsJson = jsonAdapter.toJson(options);
         try {
-            android.util.Log.i("[PoGo MITM]", "Writing %s to file " + settingsJson);
+            android.util.Log.i("[PoGo MITM]", "Writing " + settingsJson + " to file ");
             FileOutputStream output = FileUtils.openOutputStream(settingsFile);
             output.write(settingsJson.getBytes());
             output.close();
