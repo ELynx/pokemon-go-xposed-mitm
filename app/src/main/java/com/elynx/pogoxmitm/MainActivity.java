@@ -7,8 +7,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 
-import de.robv.android.xposed.XposedBridge;
-
 /**
  * Whole settings scheme is taken from https://github.com/krokofant/JodelXposed
  * Big thanks to authors for advice and code alike
