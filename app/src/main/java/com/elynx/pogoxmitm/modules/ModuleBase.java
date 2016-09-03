@@ -15,12 +15,8 @@ public abstract class ModuleBase {
             public void run() {
                 Toast.makeText(AndroidAppHelper.currentApplication().getBaseContext(), toastText, Toast.LENGTH_SHORT).show();
 
-                log(toastText);
+                XposedBridge.log("[PoGo MITM] Toasted " + toastText);
             }
         });
-    }
-
-    protected void log(String text) {
-        XposedBridge.log("[PoGo MITM] " + text);
     }
 }

@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
+
 public class DataExporter extends ModuleBase {
     protected ArrayList<PokemonExportData> pokemonData = new ArrayList<PokemonExportData>();
     protected HashMap<Integer, Integer> candyData = new HashMap<Integer, Integer>();
@@ -47,7 +50,7 @@ public class DataExporter extends ModuleBase {
         try {
             exportPokemonData();
         } catch (Exception ex) {
-            log("[ERROR] " + ex.getMessage());
+            XposedBridge.log(ex);
         }
 
     }
@@ -65,7 +68,15 @@ public class DataExporter extends ModuleBase {
         Collections.sort(this.pokemonData);
 
         for (PokemonExportData pokemon : pokemonData) {
-            pokemon.setCandies(candyData.get(pokemon.getFamily()));
+            int family = pokemon.getFamily();
+
+            if (candyData.containsKey(family)) {
+                pokemon.setCandies(candyData.get(family));
+            }
+            else
+            {
+                pokemon.setCandies(0); // :'(
+            }
         }
     }
 
@@ -123,7 +134,7 @@ public class DataExporter extends ModuleBase {
             out.close();
             outputStream.close();
         } catch (IOException ex) {
-            log("[ERROR] " + ex.getMessage());
+            XposedBridge.log(ex);
             showToast("Error when saving TSV!");
         }
 
