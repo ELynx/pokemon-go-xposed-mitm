@@ -236,9 +236,9 @@ public class IvHack {
         };
 
         for (int i = 0; i < Cps.length; ++i) {
-            if (Math.abs(Cps[i] - cpMultiplier) < 0.0001) {
-                float level = i + 1.0f;
-                level /= 2.0f;
+            if (Math.abs(Cps[i] - cpMultiplier) < 0.0001f) {
+                float level = i / 2.0f;
+                level += 1.0f;
                 return level;
             }
         }
@@ -260,9 +260,9 @@ public class IvHack {
         int total = (atk + def + sta) * 100 / 45;
 
         float cpMul = pokeBuilder.getCpMultiplier();
-        float levelNow = levelFromCpMultiplier(cpMul);
-        //float levelAdded = pokeBuilder.getNumUpgrades() / 2.0f;
-        //float levelFound = levelNow - levelAdded;
+        float levelFound = levelFromCpMultiplier(cpMul);
+        float levelAdded = pokeBuilder.getNumUpgrades() / 2.0f;
+        float levelNow = levelFound + levelAdded;
 
         //Item.ItemId ballId = pokeBuilder.getPokeball();
         //String ballStr = "";
@@ -331,12 +331,12 @@ public class IvHack {
                 circles.charAt(sta);
 
         //if (gymString.isEmpty()) {
-        nickname += " " + Float.toString(levelNow);// + " "  + ballStr;
+        nickname += " " + Float.toString(levelNow);// + "/" + Float.toString(levelFound);// + " "  + ballStr;
         //} else {
         //    nickname += " " + gymString;
         //}
 
-        int length = Math.min(nickname.length(), 15);
+        int length = Math.min(nickname.length(), 20);
         nickname = nickname.substring(0, length);
 
         if (BuildConfig.DEBUG) {
