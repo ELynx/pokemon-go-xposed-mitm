@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/pokemon-go-xposed-mitm-rn.iml" filepath="$PROJECT_DIR$/pokemon-go-xposed-mitm-rn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pokemon-go-xposed-mitm.iml" filepath="$PROJECT_DIR$/pokemon-go-xposed-mitm.iml" />
     </modules>
   </component>
 </project>
