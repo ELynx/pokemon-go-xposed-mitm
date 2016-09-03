@@ -86,9 +86,9 @@ public class Options extends FileObserver {
             options = jsonAdapter.fromJson(json);
 
             android.util.Log.i("[PoGo MITM]", "Settings"
-                    + "\nIvHack " + options.ivHack.toString()
-                    + "\nFortHack " + options.fortHack.toString()
-                    + "\nExportHack " + options.exportHack.toString()
+                    + "\nIvHack " + options.ivHack.isActive()
+                    + "\nFortHack " + options.fortHack.isActive()
+                    + "\nExportHack " + options.exportHack.isActive()
             );
 
         } catch (IOException e) {

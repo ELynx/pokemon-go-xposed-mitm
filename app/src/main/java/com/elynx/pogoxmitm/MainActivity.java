@@ -69,7 +69,12 @@ public class MainActivity extends PreferenceActivity implements Preference.OnPre
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object obj) {
-        boolean value = (boolean) obj;
+        boolean value = false;
+
+        if (obj instanceof Boolean) {
+            value = (Boolean) obj;
+        }
+
         boolean doSave = false;
 
         switch (preference.getKey()) {
