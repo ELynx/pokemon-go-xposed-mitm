@@ -4,10 +4,6 @@ package com.elynx.pogoxmitm;
  * Storage for on-off option
  */
 public class BooleanOption {
-    BooleanOption() {
-        active = false;
-    }
-
     BooleanOption(boolean active) {
         this.active = active;
     }
@@ -20,5 +16,5 @@ public class BooleanOption {
         this.active = active;
     }
 
-    boolean active;
+    public boolean active = false;
 }
