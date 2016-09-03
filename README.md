@@ -23,6 +23,10 @@ Simple hack to put IVs into pokemon nickname.
 
 Simple hack to put remaining lure time into pokestop description.
 
+Export pokemon data including IV's and attacks to tsv file located in external storage at `Pokemon/PokemonData.tsv`.
+It is done each time the application starts. You can see toast message with confirmation during loading screen.
+The data can be later used for calculations. For ex. like in the [Pokemon Evolution Calculator](https://docs.google.com/spreadsheets/d/1vlEsToajcid9KTkLzgqZCpji8bDVEpMM6GQ8SqNL4-k/edit?usp=sharing)
+
 UI for turning hacks on and off.
 
 ##What is planned
