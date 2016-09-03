@@ -2,7 +2,6 @@ package com.elynx.pogoxmitm.modules;
 
 import android.text.TextUtils;
 
-import com.elynx.pogoxmitm.Injector;
 import com.github.aeonlucid.pogoprotos.Data;
 
 import java.io.File;
@@ -14,7 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 
 public class DataExporter extends ModuleBase {
     protected ArrayList<PokemonExportData> pokemonData = new ArrayList<PokemonExportData>();
@@ -24,29 +22,25 @@ public class DataExporter extends ModuleBase {
         candyData.put(familyId, candies);
     }
 
-    public void addPokemonData(Data.PokemonData.Builder pokemonBuilder) {
+    public void addPokemonData(Data.PokemonData pokemonData1) {
         PokemonExportData pokemon = new PokemonExportData();
-        pokemon.setId(pokemonBuilder.getPokemonIdValue());
-        pokemon.setFamilyFromPokemonId(pokemonBuilder.getPokemonIdValue());
-        pokemon.setCp(pokemonBuilder.getCp());
-        pokemon.setAttack(pokemonBuilder.getIndividualAttack());
-        pokemon.setDefence(pokemonBuilder.getIndividualDefense());
-        pokemon.setStamina(pokemonBuilder.getIndividualStamina());
-        pokemon.setMoveQuick(pokemonBuilder.getMove1().name());
-        pokemon.setMoveCharge(pokemonBuilder.getMove2().name());
-        pokemon.setFavourite(pokemonBuilder.getFavorite() == 1);
+        pokemon.setId(pokemonData1.getPokemonIdValue());
+        pokemon.setFamilyFromPokemonId(pokemonData1.getPokemonIdValue());
+        pokemon.setCp(pokemonData1.getCp());
+        pokemon.setAttack(pokemonData1.getIndividualAttack());
+        pokemon.setDefence(pokemonData1.getIndividualDefense());
+        pokemon.setStamina(pokemonData1.getIndividualStamina());
+        pokemon.setMoveQuick(pokemonData1.getMove1().name());
+        pokemon.setMoveCharge(pokemonData1.getMove2().name());
+        pokemon.setFavourite(pokemonData1.getFavorite() == 1);
         pokemon.setCandies(0);
-        pokemon.setFromEgg(pokemonBuilder.getFromFort() == 1);
-        pokemon.setNumUpgrades(pokemonBuilder.getNumUpgrades());
+        pokemon.setFromEgg(pokemonData1.getFromFort() == 1);
+        pokemon.setNumUpgrades(pokemonData1.getNumUpgrades());
 
         pokemonData.add(pokemon);
     }
 
     public void run() {
-        if (!Injector.doExportHack) {
-            return;
-        }
-
         try {
             exportPokemonData();
         } catch (Exception ex) {

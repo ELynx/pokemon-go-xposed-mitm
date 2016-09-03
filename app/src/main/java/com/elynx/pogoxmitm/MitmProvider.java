@@ -75,8 +75,8 @@ public class MitmProvider {
 
         List<Requests.RequestType> types = requestTypes.get();
 
-        boolean doIvHack = Injector.doIvHack;
-        boolean doFortHack = Injector.doFortHack;
+        boolean doIvHack = Options.getInstance().getIvHack() || Options.getInstance().getExportHack();
+        boolean doFortHack = Options.getInstance().getFortHack();
 
         boolean canIvHack = false;
         boolean canFortHack = false;

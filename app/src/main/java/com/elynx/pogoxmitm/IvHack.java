@@ -90,8 +90,9 @@ public class IvHack {
         Responses.GetInventoryResponse.Builder inventoryResponseBuilder = Responses.GetInventoryResponse.parseFrom(response).toBuilder();
 
         if (inventoryResponseBuilder.hasInventoryDelta()) {
-            boolean deltaChanged = false;
             DataExporter dataExporter = new DataExporter();
+            boolean doExport = false;
+            boolean deltaChanged = false;
 
             Inventory.InventoryDelta.Builder inventoryDeltaBuilder = inventoryResponseBuilder.getInventoryDelta().toBuilder();
 
@@ -101,36 +102,47 @@ public class IvHack {
                 if (invItemBuilder.hasInventoryItemData()) {
                     Inventory.InventoryItemData.Builder invItemDataBuilder = invItemBuilder.getInventoryItemData().toBuilder();
 
-                    if (Injector.doExportHack) {
+                    if (Options.getInstance().getExportHack()) {
                         if (invItemDataBuilder.hasCandy()) {
                             int candies = invItemDataBuilder.getCandy().toBuilder().getCandy();
                             int family = invItemDataBuilder.getCandy().toBuilder().getFamilyIdValue();
                             dataExporter.addCandyData(family, candies);
                         }
+
+                        if (invItemDataBuilder.hasPokemonData()) {
+                            Data.PokemonData pokeData = invItemDataBuilder.getPokemonData();
+
+                            if (!pokeData.getIsEgg()) {
+                                dataExporter.addPokemonData(pokeData);
+                                doExport = true;
+                            }
+                        }
                     }
 
-                    if (invItemDataBuilder.hasPokemonData()) {
-                        Data.PokemonData.Builder pokeBuilder = invItemDataBuilder.getPokemonData().toBuilder();
+                    if (Options.getInstance().getIvHack()) {
+                        if (invItemDataBuilder.hasPokemonData()) {
+                            Data.PokemonData.Builder pokeBuilder = invItemDataBuilder.getPokemonData().toBuilder();
 
-                        if (pokeBuilder.getIsEgg())
-                            continue; // with another item
+                            if (pokeBuilder.getIsEgg())
+                                continue; // with another item
 
-                        dataExporter.addPokemonData(pokeBuilder);
+                            pokeBuilder = makeIvNickname(pokeBuilder);
 
-                        pokeBuilder = makeIvNickname(pokeBuilder);
+                            invItemDataBuilder.setPokemonData(pokeBuilder.build());
+                            invItemBuilder.setInventoryItemData(invItemDataBuilder.build());
+                            inventoryDeltaBuilder.setInventoryItems(invItemNo, invItemBuilder.build());
 
-                        invItemDataBuilder.setPokemonData(pokeBuilder.build());
-                        invItemBuilder.setInventoryItemData(invItemDataBuilder.build());
-                        inventoryDeltaBuilder.setInventoryItems(invItemNo, invItemBuilder.build());
-
-                        deltaChanged = true;
+                            deltaChanged = true;
+                        }
                     }
                 }
             } //end of delta->items
 
-            if (deltaChanged) {
+            if (doExport) {
                 dataExporter.run();
+            }
 
+            if (deltaChanged) {
                 inventoryResponseBuilder.setInventoryDelta(inventoryDeltaBuilder.build());
                 return inventoryResponseBuilder.build().toByteString();
             }

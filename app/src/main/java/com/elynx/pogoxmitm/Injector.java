@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
@@ -19,12 +18,6 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
  * Class that manages injection of code into target app
  */
 public class Injector implements IXposedHookLoadPackage {
-    private static final String PACKAGE_NAME = Injector.class.getPackage().getName();
-
-    public static boolean doIvHack = false;
-    public static boolean doFortHack = false;
-    public static boolean doExportHack = false;
-
     protected static String[] Methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE"};
 
     protected static ThreadLocal<RpcContext> rpcContext = new ThreadLocal<RpcContext>() {
@@ -38,14 +31,11 @@ public class Injector implements IXposedHookLoadPackage {
         if (!lpparam.packageName.equals("com.nianticlabs.pokemongo"))
             return;
 
-        XSharedPreferences prefs = new XSharedPreferences(PACKAGE_NAME);
-
-        doIvHack = prefs.getBoolean("pref_iv", false);
-        doFortHack = prefs.getBoolean("pref_fort", false);
-        doExportHack = prefs.getBoolean("pref_tsv", false);
-
-        if (!doIvHack && !doFortHack && !doExportHack)
-            return;
+        try {
+            Options.getInstance();
+        } catch (Throwable e) {
+            XposedBridge.log(e);
+        }
 
         String NiaNetName = "com.nianticlabs.nia.network.NiaNet";
 
