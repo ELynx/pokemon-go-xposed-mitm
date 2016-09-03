@@ -4,6 +4,6 @@
     <string name="pref_iv_sum">Show IVs in nickname (not permanent, client-only)</string>
     <string name="pref_fort">Show lure time</string>
     <string name="pref_fort_sum">Show remaining time of a lure module in pokestop description</string>
-    <string name="pref_tsv">Generate TSV</string>
-    <string name="pref_tsv_sum">Generates TSV on external storage with pokemon data each time you start the Pokemon Go application</string>
+    <string name="pref_export">Export pokemon data to storage</string>
+    <string name="pref_export_sum">During start save pokemon info for analysis. See module description for link to spreadsheet.</string>
 </resources>
