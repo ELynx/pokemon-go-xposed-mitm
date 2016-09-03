@@ -21,6 +21,6 @@ public abstract class ModuleBase {
     }
 
     protected void log(String text) {
-        XposedBridge.log("### [PoGo-MITM] : " + text);
+        XposedBridge.log("[PoGo MITM] " + text);
     }
 }

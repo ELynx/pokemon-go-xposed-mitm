@@ -232,7 +232,7 @@ public class IvHack {
         }
 
         if (BuildConfig.DEBUG) {
-            XposedBridge.log("For CP Multiplier " + Float.toString(cpMultiplier) + " no level found");
+            XposedBridge.log("[PoGo MITM] For CP Multiplier " + Float.toString(cpMultiplier) + " no level found");
         }
 
         return 0.0f;
