@@ -6,7 +6,7 @@ Consider module field-tested with 0.35.0.
 ##Pre-build version
 You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm).
 
-Make sure that app have permissions to read and write files. App uses them to store settings. If you experience crashes of UI, first check permissions. If it still crashes, please provide feedback via Issues.
+<b>Make sure that app have Storage Permissions</b>. App uses them to store settings. If you experience crashes of UI, first check permissions. If it still crashes, please provide feedback via Issues.
 
 All hacks implemented now don't modify data sent to Niantic servers, only examine it. They modify data going back, to add gist to it.
 This hack don't do additional request, so it does not overload Niantic servser. No 'data scraping'.
