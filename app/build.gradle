@@ -20,10 +20,10 @@ android {
     // two packages provide same files, pick first encountered
     // should be same, verify manually to be sure
     packagingOptions {
-        pickFirst  'META-INF/LICENSE.RUBY'
-        pickFirst  'META-INF/BSDL'
-        pickFirst  'META-INF/LEGAL'
-        pickFirst  'META-INF/COPYING'
+        pickFirst 'META-INF/LICENSE.RUBY'
+        pickFirst 'META-INF/BSDL'
+        pickFirst 'META-INF/LEGAL'
+        pickFirst 'META-INF/COPYING'
     }
 }
 
