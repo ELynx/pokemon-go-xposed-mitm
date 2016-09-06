@@ -8,6 +8,8 @@ You can download prebuilt version from [XPosed repository](http://repo.xposed.in
 
 <b>Make sure that app have Storage Permissions</b>. App uses them to store settings. If you experience crashes of UI, first check permissions. If it still crashes, please provide feedback via Issues.
 
+<b>IV output format</b> is "Grade Perfection% Attack Defense Stamina Level". Grade is A for 100 to 91 perfection, B for 90 to 81 and so on. With grade, you can sort pokemons A-Z to have best first, then good, then worse etc.
+
 All hacks implemented now don't modify data sent to Niantic servers, only examine it. They modify data going back, to add gist to it.
 This hack don't do additional request, so it does not overload Niantic servser. No 'data scraping'.
 
