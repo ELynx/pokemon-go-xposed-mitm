@@ -19,6 +19,7 @@ public class ScriptTestActivity extends Activity implements View.OnClickListener
         rubyButton.setOnClickListener(this);
 
         JRubyAdapter.setUpJRuby(this);
+        JRubyAdapter.put("@test_variable", "we can pass data into ruby scripts with `JRubyAdapter.put`");
     }
 
     @Override

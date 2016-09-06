@@ -28,7 +28,7 @@
             android:id="@+id/rubyScript"
             android:layout_gravity="top|center_horizontal"
             android:layout_weight="10"
-            android:text="return &quot;Test&quot;"
+            android:text="\@test_variable"
             android:typeface="monospace" />
 
         <EditText
