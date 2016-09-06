@@ -1,7 +1,6 @@
 package org.ruboto;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,7 +11,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import android.os.Environment;
+
+import com.elynx.pogoxmitm.Log;
+
 import dalvik.system.PathClassLoader;
 
 public class JRubyAdapter {

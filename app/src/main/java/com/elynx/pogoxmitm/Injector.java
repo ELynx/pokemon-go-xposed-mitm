@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -46,7 +45,7 @@ public class Injector implements IXposedHookLoadPackage {
             HttpURLConnectionImplName = "libcore.net.http.HttpURLConnectionImpl";
         }
 
-        XposedBridge.log("Injecting into PoGo");
+        Log.i("Injecting into PoGo");
 
         // methods below are roughly in order or being called
         // note that joinHeaders and readDataSteam are called from doSyncRequest
@@ -117,13 +116,13 @@ public class Injector implements IXposedHookLoadPackage {
                         if (!context.niaRequest)
                             return;
 
-                        XposedBridge.log("[request] " + context.shortDump());
+                        Log.d("[request] " + context.shortDump());
 
                         MitmOutputStream replacement = new MitmOutputStream((OutputStream) param.getResult(), context.requestId);
                         param.setResult(replacement);
 
                         if (BuildConfig.DEBUG) {
-                            XposedBridge.log("Output stream replaced");
+                            Log.d("Output stream replaced");
                         }
                     }
                 });
@@ -139,13 +138,13 @@ public class Injector implements IXposedHookLoadPackage {
                         if (!context.niaResponse)
                             return;
 
-                        XposedBridge.log("[response] " + context.shortDump());
+                        Log.d("[response] " + context.shortDump());
 
                         MitmInputStream replacement = new MitmInputStream((InputStream) param.getResult(), context.requestId);
                         param.setResult(replacement);
 
                         if (BuildConfig.DEBUG) {
-                            XposedBridge.log("Input stream replaced");
+                            Log.d("Input stream replaced");
                         }
                     }
                 });

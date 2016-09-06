@@ -27,7 +27,7 @@
             android:ems="10"
             android:id="@+id/rubyScript"
             android:layout_gravity="top|center_horizontal"
-            android:layout_weight="10"
+            android:layout_weight="3"
             android:text="\@test_variable"
             android:typeface="monospace" />
 
@@ -37,7 +37,7 @@
             android:inputType="textMultiLine"
             android:ems="10"
             android:id="@+id/rubyResult"
-            android:layout_weight="4"
+            android:layout_weight="12"
             android:typeface="monospace"
             android:layout_gravity="top|center_horizontal" />
 
@@ -59,6 +59,15 @@
             android:singleLine="true"
             android:textAlignment="center"
             android:layout_weight="1"
+            android:layout_gravity="bottom|center_horizontal" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dump_results"
+            android:id="@+id/resultDump"
+            android:layout_weight="1"
+            android:textAlignment="center"
             android:layout_gravity="bottom|center_horizontal" />
     </LinearLayout>
 </RelativeLayout>

@@ -13,6 +13,7 @@ import org.ruboto.JRubyAdapter;
 import java.nio.ByteBuffer;
 
 public class ScriptTestActivity extends Activity implements View.OnClickListener {
+    protected static String dump;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,9 @@ public class ScriptTestActivity extends Activity implements View.OnClickListener
 
         Button netButton = (Button) findViewById(R.id.mitmRun);
         netButton.setOnClickListener(this);
+
+        Button dumpButton = (Button) findViewById(R.id.resultDump);
+        dumpButton.setOnClickListener(this);
     }
 
     @Override
@@ -69,7 +73,9 @@ public class ScriptTestActivity extends Activity implements View.OnClickListener
         }
 
         if (v.getId() == R.id.mitmRun) {
-            String[] datas = {"space", "100500 CP caterpie", "mew", "mewtwo", "mewthree"};
+            NetworkImitation.clearResults();
+
+            String[] datas = {"space!!!", "100500 CP caterpie", "mew", "mewtwo", "mewthree"};
 
             for (int i = 0; i < datas.length; ++i) {
                 byte[] bytes = datas[i].getBytes();
@@ -86,6 +92,11 @@ public class ScriptTestActivity extends Activity implements View.OnClickListener
                     break;
                 }
             }
+        }
+
+        if (v.getId() == R.id.resultDump) {
+            EditText resultEdit = (EditText) findViewById(R.id.rubyResult);
+            resultEdit.setText(NetworkImitation.getResults());
         }
     }
 }

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.Bundle;
+
+import com.elynx.pogoxmitm.Log;
 
 public class ScriptLoader {
    /**

@@ -1,5 +1,6 @@
 package com.elynx.pogoxmitm.test;
 
+import com.elynx.pogoxmitm.Log;
 import com.elynx.pogoxmitm.MitmProvider;
 
 import java.nio.ByteBuffer;
@@ -16,6 +17,26 @@ public class NetworkImitation {
     protected static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 10, 3000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue());
     protected static Integer exchangeId = 0;
 
+    protected static String results = new String();
+
+    public static void clearResults() {
+        synchronized (results) {
+            results = "";
+        }
+    }
+
+    public static void appendResults(String text) {
+        synchronized (results) {
+            results += "\n" + text;
+        }
+    }
+
+    public static String getResults() {
+        synchronized (results) {
+            return new String(results);
+        }
+    }
+
     public static void pushData(final ByteBuffer data) {
         synchronized (exchangeId) {
             ++exchangeId;
@@ -28,17 +49,16 @@ public class NetworkImitation {
     }
 
     public static void doPushData(int exchangeId, ByteBuffer data) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(data.capacity());
+        data.get(byteBuffer.array(), byteBuffer.arrayOffset(), byteBuffer.capacity());
+
         boolean outConnectionOk = Math.random() <= NetworkP;
 
-        // OK to use original buffer IMO, since it is used as read-only
-        ByteBuffer outbound = MitmProvider.processOutboundPackage(data.asReadOnlyBuffer(), exchangeId, outConnectionOk);
+        ByteBuffer outbound = MitmProvider.processOutboundPackage(byteBuffer.asReadOnlyBuffer(), exchangeId, outConnectionOk);
 
         // if Mitm returned null then "send" original data
         if (outbound == null) {
-            outbound = ByteBuffer.allocate(data.capacity());
-
-            data.rewind();
-            outbound.put(data.array(), data.arrayOffset(), data.remaining());
+            outbound = byteBuffer;
         }
 
         //imitate server
@@ -53,7 +73,7 @@ public class NetworkImitation {
             }
 
             if (b == 0x21 && i > 0) {
-                byte bPrev = outbound.array()[i-1];
+                byte bPrev = outbound.array()[i - 1];
                 if (bPrev == 0x21 || bPrev == 0x31) {
                     b = 0x31;
                 }
@@ -66,16 +86,17 @@ public class NetworkImitation {
 
         try {
             Thread.sleep(ping);
-        } catch (InterruptedException e)
-        {
-            org.ruboto.Log.e(e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e(e.getMessage());
         }
 
         // end of server imitation
 
         // stop if nothing was "sent"
-        if (!outConnectionOk)
+        if (!outConnectionOk) {
+            appendResults("Connection lost");
             return;
+        }
 
         boolean inConnectionOk = Math.random() <= NetworkP;
 
@@ -83,15 +104,12 @@ public class NetworkImitation {
 
         // if Mitm returned null then "return" original data
         if (inbound == null) {
-            inbound = ByteBuffer.allocate(outbound.capacity());
-
-            outbound.rewind();
-            inbound.put(outbound.array(), outbound.arrayOffset(), outbound.remaining());
+            inbound = outbound;
         }
 
         inbound.rewind();
         String result = new String(inbound.array(), inbound.arrayOffset(), inbound.remaining());
 
-        org.ruboto.Log.i("Finally " + result);
+        appendResults(result);
     }
 }

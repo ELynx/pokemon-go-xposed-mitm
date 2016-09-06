@@ -2,8 +2,6 @@ package com.elynx.pogoxmitm;
 
 import java.nio.ByteBuffer;
 
-import de.robv.android.xposed.XposedBridge;
-
 /**
  * Class that does actual manipulations on data
  * Should be made reentrant and synchronized, since it is called from threads
@@ -22,7 +20,7 @@ public class MitmProvider {
         roData.rewind();
 
         if (BuildConfig.DEBUG) {
-            XposedBridge.log("Processing outbound package of size " + Integer.toString(roData.remaining()));
+            Log.d("Processing outbound package of size " + Integer.toString(roData.remaining()));
         }
 
         try {
@@ -36,7 +34,7 @@ public class MitmProvider {
                 // connectionOk;
             }
         } catch (Throwable e) {
-            XposedBridge.log(e);
+            Log.e(e);
         }
 
         return null;
@@ -53,7 +51,7 @@ public class MitmProvider {
         roData.rewind();
 
         if (BuildConfig.DEBUG) {
-            XposedBridge.log("Processing inbound package of size " + Integer.toString(roData.remaining()));
+            Log.d("Processing inbound package of size " + Integer.toString(roData.remaining()));
         }
 
         try {
@@ -67,7 +65,7 @@ public class MitmProvider {
                 // connectionOk
             }
         } catch (Throwable e) {
-            XposedBridge.log(e);
+            Log.e(e);
         }
 
         return null;
