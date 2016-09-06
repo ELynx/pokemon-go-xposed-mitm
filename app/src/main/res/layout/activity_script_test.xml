@@ -50,5 +50,15 @@
             android:layout_weight="1"
             android:clickable="false"
             android:textAlignment="center" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sim_network"
+            android:id="@+id/mitmRun"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:layout_weight="1"
+            android:layout_gravity="bottom|center_horizontal" />
     </LinearLayout>
 </RelativeLayout>
