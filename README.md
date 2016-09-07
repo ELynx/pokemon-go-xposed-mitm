@@ -6,7 +6,7 @@ Consider module field-tested with 0.35.0.
 ##Pre-build version
 You can download prebuilt version from [XPosed repository](http://repo.xposed.info/module/com.elynx.pogoxmitm).
 
-<b>Make sure that app have Storage Permissions</b>. App uses them to store settings. If you experience crashes of UI, first check permissions. If it still crashes, please provide feedback via Issues.
+<b>Make sure that both module and PoGo have Storage Permissions</b>. App uses them to store settings, PoGo - to read them. If you experience crashes of UI, or PoGo app at start, first check permissions. If it still crashes, please provide feedback via Issues.
 
 <b>IV output format</b> is "Grade Perfection% Attack Defense Stamina Level". Grade is A for 100 to 91 perfection, B for 90 to 81 and so on. With grade, you can sort pokemons A-Z to have best first, then good, then worse etc.
 
