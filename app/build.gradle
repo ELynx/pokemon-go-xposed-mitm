@@ -3,6 +3,12 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.3'
+
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+
     defaultConfig {
         applicationId "com.elynx.pogoxmitm"
         minSdkVersion 16
@@ -31,4 +37,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     provided 'de.robv.android.xposed:api:53'
     provided 'de.robv.android.xposed:api:53:sources'
+    compile 'com.google.protobuf:protobuf-java:3.0.0'
+    compile 'commons-io:commons-io:2.4'
+    compile 'com.squareup.moshi:moshi:1.2.0'
 }
