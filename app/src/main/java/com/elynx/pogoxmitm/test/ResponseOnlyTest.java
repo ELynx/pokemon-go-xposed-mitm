@@ -15,7 +15,7 @@ public class ResponseOnlyTest extends AlwaysFails {
     }
 
     public String userspaceBrief() {
-        return "Module that does nothing";
+        return "Module that doubles even responses";
     }
 
     public String userspaceInfo() {
@@ -33,8 +33,8 @@ public class ResponseOnlyTest extends AlwaysFails {
         return types;
     }
 
-    public ByteString processResponse(Requests.RequestType type, ByteString data) {
-        if (data.size() < 5) {
+    public ByteString processResponse(Requests.RequestType type, ByteString data, int exchangeId, boolean connectionOk) {
+        if (connectionOk && ((exchangeId & 1) == 0)) {
             //TODO valid?
             return data.concat(data);
         }

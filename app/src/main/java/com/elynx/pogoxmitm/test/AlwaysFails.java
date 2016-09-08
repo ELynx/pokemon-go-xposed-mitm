@@ -44,11 +44,11 @@ public class AlwaysFails implements ModuleManager {
         return new HashSet<>();
     }
 
-    public ByteString processRequest(Requests.RequestType type, ByteString data) {
+    public ByteString processRequest(Requests.RequestType type, ByteString data, int exchangeId, boolean connectionOk) {
         return null;
     }
 
-    public ByteString processResponse(Requests.RequestType type, ByteString data) {
+    public ByteString processResponse(Requests.RequestType type, ByteString data, int exchangeId, boolean connectionOk) {
         return null;
     }
 }

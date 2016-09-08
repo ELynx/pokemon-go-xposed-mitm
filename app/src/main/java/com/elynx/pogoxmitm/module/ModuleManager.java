@@ -70,7 +70,7 @@ public interface ModuleManager {
      * @param data Data of request
      * @return Modified data if changes are made, null otherwise
      */
-    ByteString processRequest(Requests.RequestType type, ByteString data);
+    ByteString processRequest(Requests.RequestType type, ByteString data, int exchangeId, boolean connectionOk);
 
     /**
      * Process response from server to client
@@ -79,5 +79,5 @@ public interface ModuleManager {
      * @param data Data of response
      * @return Modified data if changes are made, null otherwise
      */
-    ByteString processResponse(Requests.RequestType type, ByteString data);
+    ByteString processResponse(Requests.RequestType type, ByteString data, int exchangeId, boolean connectionOk);
 }
