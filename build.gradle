@@ -1,16 +1,16 @@
 // get protoc version 3 here https://github.com/google/protobuf/releases
 // put protoc to root repo folder or change path
 
-// get jruby.jar from here http://jruby.org/files/downloads/1.7.24/index.html
+// install Ruboto core from here http://ruboto.org/downloads/
 
 task pogoProtosWin(type: Exec){
     workingDir './POGOProtos'
-    commandLine 'cmd', '/c', 'compile_pretty.py ruby -p ../protoc -o ../app/src/main/assets/scripts'
+    commandLine 'cmd', '/c', 'compile_pretty.py java -p ../protoc -o ../app/src/main/java'
 }
 
 task pogoProtosNix(type: Exec){
     workingDir './POGOProtos'
-    commandLine './compile_pretty.py ruby -p ../protoc -o ../app/src/main/assets/scripts'
+    commandLine './compile_pretty.py java -p ../protoc -o ../app/src/main/java'
 }
 
 buildscript {
