@@ -48,7 +48,7 @@ public class MitmOutputStream extends ByteArrayOutputStream {
         boolean connectionOk = target != null;
 
         // null if original is fine, otherwise contains new data
-        ByteBuffer fromMitm = MitmProvider.processOutboundPackage(wrapped, requestId, connectionOk);
+        ByteBuffer fromMitm = MitmProvider.getInstance().processOutboundPackage(wrapped, requestId, connectionOk);
 
         if (fromMitm != null) {
             reset();

@@ -89,7 +89,7 @@ public class MitmInputStream extends InputStream {
 
         // null if original is fine, otherwise contains new data
         boolean connectionOk = buffer.hasRemaining();
-        ByteBuffer fromMitm = MitmProvider.processInboundPackage(buffer.asReadOnlyBuffer(), responseId, connectionOk);
+        ByteBuffer fromMitm = MitmProvider.getInstance().processInboundPackage(buffer.asReadOnlyBuffer(), responseId, connectionOk);
 
         if (fromMitm != null) {
             buffer = fromMitm;
