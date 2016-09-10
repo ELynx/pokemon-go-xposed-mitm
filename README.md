@@ -1,3 +1,12 @@
+#ABOUT VERSION 0.37.0
+With version 0.37.0 SafetyNet for Android API is added into PoGo. This (now) prevents any XPosed modules from working. This also prevents PoGo from working on rooted device. Since my device is rooted, I cannot play PoGo, let alone do and test any hacks.
+
+Because I cannot play PoGo I have no interest in working on this anymore. May be in a day, may be in a week, or in a year, workaround will be found. Then I will see. You will see status update here, if I do.
+
+It was really nice to tag along with other developers, work with users and learn new stuff.
+
+If ever anyone from Niantic is reading this - it was best cat-and-mouse game, from day one. Your team is pros, and make great things. Bad that you ended it in kick-in-balls fasion. Breaking our little hacks is one thing, preventing us playing it is entirely different.
+
 #Pokemon GO (c) direct Man-in-the-Middle
 ![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.35.0-blue.svg?style=flat-square")
 ![license](https://img.shields.io/github/license/ELynx/pokemon-go-xposed-mitm.svg)
