@@ -12,8 +12,10 @@ public class MitmOutputStream extends ByteArrayOutputStream {
     OutputStream target = null;
     int requestId = 0;
 
+    static final int AverageRequestSize = 2048; // average request is around 1500 bytes
+
     public MitmOutputStream(OutputStream target, int requestId) {
-        super(2048); // average request is around 1500 bytes
+        super(AverageRequestSize);
         this.target = target; // can become null if connection is lost
         this.requestId = requestId;
     }

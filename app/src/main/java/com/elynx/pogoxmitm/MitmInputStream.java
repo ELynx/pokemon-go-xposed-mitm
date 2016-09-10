@@ -17,6 +17,8 @@ public class MitmInputStream extends InputStream {
 
     boolean mitmDone = false;
 
+    static final int AverageResponseSize = 4096; // average response is around 3500 bytes
+
     public MitmInputStream(InputStream target, int responseId) {
         this.responseId = responseId;
 
@@ -27,11 +29,9 @@ public class MitmInputStream extends InputStream {
         // read all data from target into buffer
         // from http://www.gregbugaj.com/?p=283
 
-        int AverageRequestSize = 4096; // average response is around 3500 bytes
+        ByteArrayOutputStream os = new ByteArrayOutputStream(AverageResponseSize);
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream(AverageRequestSize);
-
-        byte[] bytes = new byte[AverageRequestSize];
+        byte[] bytes = new byte[AverageResponseSize];
         int bytesRead;
 
         try {
@@ -93,6 +93,7 @@ public class MitmInputStream extends InputStream {
 
         if (fromMitm != null) {
             buffer = fromMitm;
+            buffer.rewind();
         }
 
         mitmDone = true;
