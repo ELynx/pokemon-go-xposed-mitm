@@ -18,7 +18,7 @@
             android:name="xposedminversion"
             android:value="53" />
 
-        <activity android:name=".ScriptTestActivity">
+        <activity android:name=".test.ScriptTestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
