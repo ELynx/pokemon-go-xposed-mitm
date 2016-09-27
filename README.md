@@ -1,8 +1,11 @@
 #Current status
-Looks like [this](https://github.com/FreedomMercenary/pokemon-go-xposed-mitm/tree/PoGo-0.37-Fix) fork is under delevopment, at least it is said to be working with 0.37.0. Check it out, to see how things are going.
+[This](https://github.com/FreedomMercenary/pokemon-go-xposed-mitm/tree/PoGo-0.37-Fix) fork by [FreedomMercenary](https://github.com/FreedomMercenary) is under delevopment. Check it out, and see how things are going. This is what I like about Open Source.
 
-[@FreedomMercenary](https://github.com/FreedomMercenary) - contact me on [XDA](http://forum.xda-developers.com/member.php?u=7671114), I will add you as developer in XPosed repo, and send you keys for release signing. This will enable you to make your own releases there.
+Also [FreedomMercenary](https://github.com/FreedomMercenary) can now publish in XPosed repository, and got signing keys from me. So if new releases appear, transition should be smooth.
 
+So long, and thanks for all the stars!
+
+#Old readme, kept here for nostalgia
 #Pokemon GO (c) direct Man-in-the-Middle
 ![pokemon](https://img.shields.io/badge/Pokemon%20GO-0.35.0-blue.svg?style=flat-square")
 ![license](https://img.shields.io/github/license/ELynx/pokemon-go-xposed-mitm.svg)
